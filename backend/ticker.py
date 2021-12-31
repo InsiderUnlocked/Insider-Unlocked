@@ -4,7 +4,7 @@
 import yfinance as yf
 
 
-def main(ticker):
+def getTickerData(ticker):
     data = yf.Ticker(ticker)
     sector = data.info['sector']
     industry = data.info['industry']
