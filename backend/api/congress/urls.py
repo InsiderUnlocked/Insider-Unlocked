@@ -6,9 +6,9 @@ router = routers.DefaultRouter()
 
 router.register(r'congress-trades', views.AllCongressViewSet, basename='congressAll')
 
-router.register(r'congress-person', views.CongressPersonViewSet, basename='CongressPersons')
+router.register(r'congress-person', views.CongressPersonViewSet, basename='congressPerson')
 
-router.register(r'ticker', views.TickerViewSet, basename='ticker')
+router.register(r'ticker', views.TickerViewSet, basename='Ticker')
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

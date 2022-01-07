@@ -1,6 +1,6 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, ReadOnlyField
 from .models import CongressTrade, CongressPerson, Ticker
-
+from rest_framework import serializers
 
 class TickerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,12 +13,10 @@ class CongressPersonSerializer(serializers.ModelSerializer):
         fields = ('fullName', 'currentParty', 'currentChamber',  'currentState', 'image',)
 
 class CongressTradeSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
-    ticker = serializers.SerializerMethodField()
-
-    # def get_congress_name(self, obj):
-        # return '{} {}'.format(obj.name.firstName, obj.name.lastName) 
+    name = ReadOnlyField(source='name.fullName')
+    ticker = ReadOnlyField(source='ticker.ticker')
 
     class Meta:
         model = CongressTrade
-        fields = ('name', 'ticker', 'disclosureDate', 'transactionDate', 'owner', 'ticker', 'assetDescription', 'assetType', 'transactionType', 'amount', 'comment', 'name', 'pdf', 'ptrLink')
+        fields = ('name', 'ticker', 'disclosureDate', 'transactionDate', 'owner', 'assetDescription', 'assetType', 'transactionType', 'amount', 'comment', 'name', 'pdf', 'ptrLink')
+        # fields = 'al'

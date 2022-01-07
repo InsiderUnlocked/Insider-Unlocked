@@ -5,6 +5,8 @@ from rest_framework.decorators import action
 from .serializers import CongressPersonSerializer, CongressTradeSerializer
 from .models import CongressPerson, CongressTrade, Ticker
 
+from rest_framework.response import Response
+
 # Django Background Tasks
 # from .scripts.names import currentMembers, prevMembers
 # from .scripts.updateCongressPerson import main as updateCongressPersonMain
@@ -52,10 +54,11 @@ class TempDBUpdatesViewSet(viewsets.ModelViewSet):
 
 class AllCongressViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
-    serializer_class = CongressPersonSerializer
+    serializer_class = CongressTradeSerializer
 
     # get all senators that have made a transaction
-    queryset = CongressPerson.objects.filter(totalTransactions__gt=0).order_by('-totalTransactions')
+    queryset = CongressTrade.objects.all().order_by('transactionDate')
+
 
 class CongressPersonViewSet(viewsets.ModelViewSet):
     # Get slug from url
@@ -80,18 +83,35 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        serializer = CongressTradeSerializer(instance, many=True)
+        
+        return Response(serializer.data)
+       
+
 
 class TickerViewSet(viewsets.ModelViewSet):
     # Get slug from url
     # permission_classes = (permissions.AllowAny,)    
-    lookup_field = 'ticker'
     queryset = CongressTrade.objects.all()
     serializer_class = CongressTradeSerializer  
+    lookup_field = 'ticker'
 
     # filter by slug in url in django rest framework modelviewset
     def get_queryset(self):
-        ticker = self.kwargs['ticker']
+        ticker = Ticker.objects.get(ticker=self.kwargs['ticker'])
+        print(ticker)
+
         queryset = CongressTrade.objects.filter(ticker=ticker).order_by('-transactionDate')
- 
+        print(queryset)
+
         return queryset
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        serializer = CongressTradeSerializer(instance, many=True)
+        return Response(serializer.data)
+    
+    
 
