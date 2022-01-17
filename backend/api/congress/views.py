@@ -50,8 +50,8 @@ class TempDBUpdatesViewSet(viewsets.ModelViewSet):
         # pass
 
     # print("DONE!")
-    # populate()
-    pass
+    populate()
+    # pass
 
 class AllCongressViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
