@@ -6,6 +6,7 @@ import yfinance as yf
 
 def getTickerData(ticker):
     data = yf.Ticker(ticker)
+    print(data)
     sector = data.info['sector']
     industry = data.info['industry']
     # if industry has '—', only get first part

@@ -3,7 +3,7 @@ from .models import CongressPerson, CongressTrade, Ticker
 
 # Register your models here.
 class TickerAdmin(admin.ModelAdmin):
-    list_display = ('ticker', 'company', 'market', 'sector', 'industry',)
+    list_display = ('ticker', 'company', 'marketcap', 'sector', 'industry',)
     search_fields = ['ticker']
 
 class CongressPersonAdmin(admin.ModelAdmin):
@@ -12,7 +12,7 @@ class CongressPersonAdmin(admin.ModelAdmin):
     search_fields = ['fullName']
 
 class CongressTradeAdmin(admin.ModelAdmin):
-    list_display =  ('disclosureDate', 'transactionDate', 'owner', 'ticker', 'assetDescription', 'assetType', 'transactionType', 'amount', 'comment', 'name', 'pdf', 'ptrLink')
+    list_display =  ('disclosureDate', 'transactionDate', 'owner', 'ticker', 'assetDescription', 'assetDetails', 'assetType', 'transactionType', 'amount', 'comment', 'name', 'pdf', 'ptrLink')
     list_filter = ('transactionDate', 'name__currentChamber')
     search_fields = ['ticker']
 

@@ -5,6 +5,8 @@ from jsonfield import JSONField
 
 # Names of Congress
 class CongressPerson(models.Model):
+    # bioguide
+    bioguide = models.CharField(max_length=100, unique=True)
     # first name
     firstName = models.CharField(max_length=1000)
     
@@ -50,8 +52,8 @@ class Ticker(models.Model):
     # company name 
     company = models.CharField(max_length=1000)
 
-    # market 
-    market = models.CharField(max_length=20)
+    # marketcap 
+    marketcap = models.IntegerField(blank=True, null=True)
     # sector
     sector = models.CharField(max_length=1000)
     # industry
@@ -66,7 +68,7 @@ class CongressTrade(models.Model):
     name = models.ForeignKey(CongressPerson, on_delete=models.CASCADE)
     
     # PRIMARY KEY (connect to another table with ticker name)
-    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)
+    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, null=True)
 
     # transaction date
     transactionDate = models.DateField(blank=True, null=True)
@@ -86,6 +88,9 @@ class CongressTrade(models.Model):
     # asset description
     assetDescription = models.CharField(max_length=1000, blank=True)
     
+    # asset details
+    assetDetails = models.CharField(max_length=1000, blank=True, null=True)
+
     # asset type (Stock, Bond)
     assetType = models.CharField(max_length=1000, blank=True)
 

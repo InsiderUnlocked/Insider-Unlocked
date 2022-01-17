@@ -6,13 +6,14 @@ from .serializers import CongressPersonSerializer, CongressTradeSerializer
 from .models import CongressPerson, CongressTrade, Ticker
 
 from rest_framework.response import Response
+from .pagination import StandardResultsSetPagination
 
 # Django Background Tasks
 # from .scripts.names import currentMembers, prevMembers
-# from .scripts.updateCongressPerson import main as updateCongressPersonMain
+# from .scripts.congressPeople import main as updateCongressPersonMain
 # from .scripts.house import main as houseMain
 # from .scripts.senators import main as senatorsMain
-
+from .populate import main as populate
 
 # TODO: Django Background Task
 class TempDBUpdatesViewSet(viewsets.ModelViewSet):
@@ -44,12 +45,12 @@ class TempDBUpdatesViewSet(viewsets.ModelViewSet):
     #     pass
 
     # try:
-    #     updateCongressPersonMain()
+        # updateCongressPersonMain()
     # except:
-    #     pass
+        # pass
 
     # print("DONE!")
-
+    # populate()
     pass
 
 class AllCongressViewSet(viewsets.ModelViewSet):
@@ -84,10 +85,11 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
-        instance = self.get_queryset()
-        serializer = CongressTradeSerializer(instance, many=True)
-        
-        return Response(serializer.data)
+        paginator = StandardResultsSetPagination()
+        result_page = paginator.paginate_queryset(self.get_queryset(), request)
+        serializer = self.get_serializer(result_page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
        
 
 
@@ -109,9 +111,11 @@ class TickerViewSet(viewsets.ModelViewSet):
         return queryset
     
     def retrieve(self, request, *args, **kwargs):
-        instance = self.get_queryset()
-        serializer = CongressTradeSerializer(instance, many=True)
-        return Response(serializer.data)
+        paginator = StandardResultsSetPagination()
+        result_page = paginator.paginate_queryset(self.get_queryset(), request)
+        serializer = self.get_serializer(result_page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
     
     
 
