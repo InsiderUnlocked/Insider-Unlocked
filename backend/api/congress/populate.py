@@ -70,6 +70,11 @@ def getCongressPerson(name):
     else:
         return congressPerson[0]
 
+def updateCongressPersonCount():
+    for congressPerson in CongressPerson.objects.all():
+        congressPerson.count = CongressTrade.objects.filter(name=congressPerson).count()
+        congressPerson.save()
+
 
 def main():
     # Load historical data
@@ -131,4 +136,4 @@ def main():
     print(objs)
     CongressTrade.objects.bulk_create(objs, ignore_conflicts=True)
 
-
+    updateCongressPersonCount()

@@ -13,7 +13,7 @@ from .pagination import StandardResultsSetPagination
 # from .scripts.congressPeople import main as updateCongressPersonMain
 # from .scripts.house import main as houseMain
 # from .scripts.senators import main as senatorsMain
-# from .populate import main as populate
+from .populate import main as populate
 
 # TODO: Django Background Task
 class TempDBUpdatesViewSet(viewsets.ModelViewSet):
@@ -50,8 +50,8 @@ class TempDBUpdatesViewSet(viewsets.ModelViewSet):
         # pass
 
     # print("DONE!")
-    # populate()
-    pass
+    populate()
+    # pass
 
 class AllCongressViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
