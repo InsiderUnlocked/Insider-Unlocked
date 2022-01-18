@@ -5,7 +5,8 @@ import { Layout, Image, Row, Col, Card } from 'antd';
 
 import FooterComponent from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar'
-
+import { TitleSearch } from '../Filters/TitleSearch';
+import { StatusFilter } from '../Filters/StatusFilter';
 import reqwest from 'reqwest';
 
 const { Content } = Layout;
@@ -13,7 +14,7 @@ const { Content } = Layout;
 const columns = [
     {
       title: 'Full Name',
-      dataIndex: 'congress_name',
+      dataIndex: 'fullName',
       key: 'fullName',
       render: text => <a href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
     },
@@ -31,12 +32,12 @@ const columns = [
         title: 'image',
         dataIndex: 'image',
         key: 'image',
-        render: image => <Image width={200} src={image}/>,
+        render: image => <Image width={100} src={image}/>,
     },
     {
         title: 'state',
-        dataIndex: 'state',
-        key: 'state',
+        dataIndex: 'currentState',
+        key: 'currentState',
     },
 ];
 
@@ -51,7 +52,7 @@ class CongressTrades extends React.Component {
     data: [],
     pagination: {
       current: 1,
-      pageSize: 100,
+      pageSize: 20,
     },
     loading: false,
   };
@@ -130,14 +131,23 @@ class CongressTrades extends React.Component {
                 </Col>
               </Row>
             </div>
+
+            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"  }}>
+            <StatusFilter
+            filterBy={this.handleFilter}
+            style={{float: "left", marginLeft: 25}}
+            />
+            <TitleSearch onSearch={this.handleSearch} style={{marginRight: 20}} />
+            </div>
               <Table
-                  columns={columns}
-                  dataSource={data}
-                  pagination={pagination}
-                  loading={loading}
-                  onChange={this.handleTableChange}
-                  scroll={{x: "max-content", y: '35vh' }}
-                  style={{ margin: 20, boxShadow: '1px 1px 1px 1px #ccc'}}
+                bordered
+                columns={columns}
+                dataSource={data}
+                pagination={pagination}
+                loading={loading}
+                onChange={this.handleTableChange}
+                scroll={{x: "max-content", y: '48vh' }}
+                style={{ margin: 20, boxShadow: '1px 1px 1px 1px #ccc'}}
               />
           </Content>
 

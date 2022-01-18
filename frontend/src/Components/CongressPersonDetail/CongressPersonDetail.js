@@ -58,7 +58,7 @@ class CongressTrades extends React.Component {
     data: [],
     pagination: {
       current: 1,
-      pageSize: 100,
+      pageSize: 20,
     },
     loading: false,
   };
@@ -107,12 +107,14 @@ class CongressTrades extends React.Component {
           
           <Content>
               <Table
+                bordered
                   columns={columns}
                   dataSource={data}
                   pagination={pagination}
                   loading={loading}
                   onChange={this.handleTableChange}
-                  scroll={{ y: 200 }}
+                  scroll={{x: "max-content", y: '48vh' }}
+                  style={{ margin: 20, boxShadow: '1px 1px 1px 1px #ccc'}}
               />
           </Content>
 

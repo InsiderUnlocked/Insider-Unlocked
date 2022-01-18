@@ -44,8 +44,8 @@ const columns = [
     },
     {
         title: 'Name',
-        dataIndex: 'congress_name',
-        key: 'congress_name',
+        dataIndex: 'name',
+        key: 'name',
         render: text => <a href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
     },
     {
@@ -67,7 +67,7 @@ class CongressTrades extends React.Component {
     data: [],
     pagination: {
       current: 1,
-      pageSize: 100,
+      pageSize: 20,
     },
     loading: false,
   };
@@ -156,8 +156,8 @@ class CongressTrades extends React.Component {
                 pagination={pagination}
                 loading={loading}
                 onChange={this.handleTableChange}
-                scroll={{ x: "max-content", y: '35vh' }}
-                style={{ margin: 20, boxShadow: '1px 1px 1px 1px #ccc' }}
+                scroll={{x: "max-content", y: '48vh' }}
+                style={{ margin: 20, boxShadow: '1px 1px 1px 1px #ccc'}}
 
             />
         </Content>
