@@ -1,15 +1,20 @@
+// Purpose: create ticker detail page
 
 // IMPORTS
 import React from 'react';
-import { Table, Tag } from 'antd';
+
+import { Table, Tag, Row, Col, Card } from 'antd';
+import "./TickerDetail.css"
+
+import {Themes, TradingViewWidget} from 'react-tradingview-widget';
+
 import FooterComponent from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar'
-import TradingViewWidget from 'react-tradingview-widget';
-import { Themes } from 'react-tradingview-widget';
-import "./TickerDetail.css"
+
+
 import reqwest from 'reqwest';
-import {Row, Col, Card } from 'antd';
 import Sorter from '../../Utils/Sorter/Sorter';
+
 // Initilizing the columns of our table
 const columns = [
     {
@@ -48,7 +53,7 @@ const columns = [
     },
 ];
 
-// For pagination to work we need to get the user input, such as page size, and current page number
+// For pagination to work we need to get the user input, such as page size, and current page number this is what the function does
 const getURLParams = params => ({
   results: params.pagination.pageSize,
   page: params.pagination.current,
@@ -56,40 +61,52 @@ const getURLParams = params => ({
 });
 
 class CongressTrades extends React.Component {
+  // Static variables that we will fetch later on 
   state = {
+    // Variable to hold the data we retrieve from our request
     data: [],
+    // Keeps track of pagination variables
     pagination: {
+      // Current page of the user
       current: 1,
+      // Current page size of the user's table
       pageSize: 20,
     },
+    // Initilzing a skeleton loader
     loading: false,
   };
 
+  // This function is called when this component is first mounted to DOM(meaning when its first visually represented)
   componentDidMount() {
+    // We assign the pagination variable what we initilzed earlier in the state variable
     const { pagination } = this.state;
+    // Fetch this variable
     this.fetch({ pagination });
   }
 
-  // function to basically keep track of the pagaination of the table and the interactions of the user with the table
-  handleTableChange = (pagination, filters, sorter) => {
+  // Function called when any changes are done to the table
+  handleTableChange = (pagination) => {
+    // Fetch the pagination variable to validate the pagination request of the user
     this.fetch({
-      sortField: sorter.field,
-      sortOrder: sorter.order,
       pagination,
-      ...filters,
     });
   };
 
+  // Request the info from the backend
   fetch = (params = {}) => {
+    // Set the skeleton loader to true while we are making the request
     this.setState({ loading: true });
     reqwest({
       url: `http://127.0.0.1:8000/government/ticker/${this.props.match.params.slug}/?format=json`,
       method: 'get',
       type: 'json',
+      // Get the user params to validate the pagination for the request URL
       data: getURLParams(params),
+      // Upon the requeset validiating
     }).then(data => {
-      console.log(data);
+      // Assign variables respectively
       this.setState({
+        // Set skeleton loader to false as data is loaded
         loading: false,
         data: data.results,
         pagination: {

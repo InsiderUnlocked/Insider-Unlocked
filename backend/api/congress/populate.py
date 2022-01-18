@@ -1,3 +1,5 @@
+# Purpose: The purpose of this script is to populate the database with historical data, and then update the database with the current data.
+
 # Import Libraries
 from .models import CongressPerson, Ticker, CongressTrade
 from .scripts.ticker import getTickerData
@@ -82,9 +84,7 @@ def updateCongressPersonCount():
         i += 1
 
 
-def main():
-    # Load historical data
-    data = json.load(open("./congress/transactions.json"))
+def updateDB(data):
     objs = []
     i = 0
     for row in data:
@@ -143,3 +143,16 @@ def main():
     CongressTrade.objects.bulk_create(objs, ignore_conflicts=True)
 
     updateCongressPersonCount()
+
+def historical():
+    # Load historical data  
+    data = json.load(open("./congress/transactions.json"))
+    
+    updateDB(data)
+
+
+def current():
+    # use senators script to get current data  
+    data = ''
+
+    updateDB(data)

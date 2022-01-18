@@ -1,8 +1,13 @@
+# Purpose: Used in models.py to update the CongressPerson's tradesCount field 
+
+# Import Libraries
 from django.db.models import signals
 from django.dispatch import dispatcher
 
 def tradesCount(sender, instance, signal, *args, **kwargs):
-    # Runs through all the change types and adds up their current numbers
+    # Import needs to be within function to access the CongressPerson table data
     from .models import CongressPerson
-    for change_type in CongressPerson.objects.all():
-        change_type.tradesCount()
+    
+    # Runs through all the congress people and updates their 
+    for person in CongressPerson.objects.all():
+        person.tradesCount()

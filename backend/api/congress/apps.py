@@ -1,5 +1,6 @@
-from django.apps import AppConfig
+# Purpose: Registering app (congress folder) with django
 
+from django.apps import AppConfig
 
 class CongressConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'

@@ -1,3 +1,4 @@
+# Purpose: Initilze the table models for all our endpoints
 from django.db.models import signals
 from .signals import tradesCount
 from django.db import models

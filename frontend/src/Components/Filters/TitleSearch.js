@@ -1,3 +1,6 @@
+// Purpose: Build out a feature to search tables
+
+// Imports
 import React from "react";
 import { Input } from "antd";
 

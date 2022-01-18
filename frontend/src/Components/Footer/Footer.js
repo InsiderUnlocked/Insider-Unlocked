@@ -1,11 +1,9 @@
+// Purpose: Build Footer Component 
+
+// Imports
 import { Layout } from 'antd';
 import { FaDiscord } from 'react-icons/fa';
-
 import './Footer.css';
-
-const { Footer } = Layout;
-
-const centerStyle = { position: 'relative', display: 'flex'};
   
 const FooterComponent = () => {
     return (
