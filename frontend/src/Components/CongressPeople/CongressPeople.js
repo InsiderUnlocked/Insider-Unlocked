@@ -8,7 +8,7 @@ import Navbar from '../Navbar/Navbar'
 import { TitleSearch } from '../Filters/TitleSearch';
 import { StatusFilter } from '../Filters/StatusFilter';
 import reqwest from 'reqwest';
-
+import Sorter from '../../Utils/Sorter/Sorter';
 const { Content } = Layout;
 
 const columns = [
@@ -42,9 +42,8 @@ const columns = [
 ];
 
 const getRandomuserParams = params => ({
-  results: params.pagination.pageSize,
-  offset: (params.pagination.current - 1) * 100,
-  ...params,
+  limit: params.pagination.pageSize,
+  // offset: params.pagination.current  * params.pagination.pageSize,
 });
 
 class CongressTrades extends React.Component {
@@ -85,9 +84,7 @@ class CongressTrades extends React.Component {
         data: data.results,
         pagination: {
           ...params.pagination,
-        //   total: 200,
-          // 200 is mock data, you should read it from server
-          total: data.count,
+          total: data.count - params.pagination.pageSize,
         },
       });
     });
@@ -99,38 +96,35 @@ class CongressTrades extends React.Component {
         <Layout>
           <Navbar />
           <Content>
-          <div style={{ position: 'relative', marginLeft: 25, marginTop: 10 }}>
+          <div style={{ position: 'relative', marginLeft: 25, marginTop: 10, marginBottom: 10}}>
               <h1 style={{ display: 'inline', position: 'relative'  }}>Summary for the last 30 days</h1>
-              <div style={{ display: 'inline', right: 25, position: 'absolute' }}>
-              </div>
             </div>
-
             {/* Stats*/}
-            <div className="site-card-wrapper" style={{ marginBottom: 20, marginRight: 20, marginLeft: 20, marginTop: 20 }}>
-              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col xs={24} xl={8}>
-                  <Card hoverable title="Number of Transactions" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
-                    <h1 style={{ fontSize: '30px' }}>4</h1>
+            <div className="site-card-wrapper" style={{marginBottom: 20}}>
+            <Row gutter={[16, 16]} style={{ margin: 10 }}>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Number of Transactions" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
+                  <h1 style={{ fontSize: '30px' }}>4</h1>
 
-                    <p style={{ bottom: 0, margin: 0 }}>Total number of trades in disclosure</p>
-                  </Card>
-                </Col>
-                <Col xs={24} xl={8}>
-                  <Card hoverable title="Total Trade Volume" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
-                    <h1 style={{ fontSize: '30px' }}>$2,350.00</h1>
+                  <p style={{ bottom: 0, margin: 0 }}>Total Number of Trades in Disclosure</p>
+                </Card>
+              </Col>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Total Trade Volume" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
+                  <h1 style={{ fontSize: '30px' }}>$2,350.00</h1>
 
-                    <p style={{ bottom: 0, margin: 0 }}>Combined volume of asset sales + purchases</p>
-                  </Card>
-                </Col>
-                <Col xs={24} xl={8}>
-                  <Card hoverable title="Trade Type Ratio" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
-                    <h1 style={{ fontSize: '30px' }}><font color='green'>4</font>/<font color='red'>4</font></h1>
+                  <p style={{ bottom: 0, margin: 0 }}>Combined Volume of Asset Sales + Purchases</p>
+                </Card>
+              </Col>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Trade Type Ratio" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
+                  <h1 style={{ fontSize: '30px' }}><font color='green'>4</font>/<font color='red'>4</font></h1>
 
-                    <p style={{ bottom: 0, margin: 0 }}>Purchases trades / Sales trades</p>
-                  </Card>
-                </Col>
-              </Row>
-            </div>
+                  <p style={{ bottom: 0, margin: 0 }}>Purchases Trades / Sales Trades</p>
+                </Card>
+              </Col>
+            </Row>
+          </div>
 
             <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"  }}>
             <StatusFilter
@@ -150,7 +144,7 @@ class CongressTrades extends React.Component {
                 style={{ margin: 20, boxShadow: '1px 1px 1px 1px #ccc'}}
               />
           </Content>
-
+          <FooterComponent />
         </Layout>
     );
   }

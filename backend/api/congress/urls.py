@@ -12,6 +12,8 @@ router.register(r'ticker', views.TickerViewSet, basename='Ticker')
 
 router.register(r'congress-all', views.AllCongressPeopleViewSet, basename='congressPersonAll')
 
+router.register(r'summary-stats', views.SummaryStatsViewSet, basename='summaryStats')
+
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

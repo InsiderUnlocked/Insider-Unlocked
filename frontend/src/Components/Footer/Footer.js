@@ -9,8 +9,8 @@ const centerStyle = { position: 'relative', display: 'flex'};
   
 const FooterComponent = () => {
     return (
-        <div className="footer">
-            {/* <span>Copyright © 2021 Insider Unlocked, Inc. All rights reserved</span> */}
+        <div className="bot-footer">
+            <span>Copyright © 2021 Insider Unlocked, Inc. All rights reserved</span>
         </div>
     )
 }

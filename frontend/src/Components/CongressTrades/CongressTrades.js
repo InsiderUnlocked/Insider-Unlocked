@@ -10,12 +10,13 @@ import reqwest from 'reqwest';
 
 import './CongressTrades.css';
 
-import moment from 'moment';
+import { TitleSearch } from '../Filters/TitleSearch';
+import { StatusFilter } from '../Filters/StatusFilter';
+
+
 
 const { Content } = Layout;
-const { RangePicker } = DatePicker;
 
-const dateFormat = 'YYYY/MM/DD';
 
 
 const columns = [
@@ -56,10 +57,10 @@ const columns = [
     },
 ];
 
-const getRandomuserParams = params => ({
-  results: params.pagination.pageSize,
-  offset: (params.pagination.current - 1) * 100,
-  ...params,
+const getURLParams = params => ({
+  limit: params.pagination.pageSize,
+  offset: params.pagination.current  * params.pagination.pageSize,
+  // ...params,
 });
 
 class CongressTrades extends React.Component {
@@ -92,7 +93,7 @@ class CongressTrades extends React.Component {
       url: 'http://127.0.0.1:8000/government/congress-trades/?format=json',
       method: 'get',
       type: 'json',
-      data: getRandomuserParams(params),
+      data: getURLParams(params),
     }).then(data => {
       console.log(data);
       this.setState({
@@ -100,9 +101,7 @@ class CongressTrades extends React.Component {
         data: data.results,
         pagination: {
           ...params.pagination,
-        //   total: 200,
-          // 200 is mock data, you should read it from server
-          total: data.count,
+          total: data.count - params.pagination.pageSize,
         },
       });
     });
@@ -114,39 +113,44 @@ class CongressTrades extends React.Component {
       <Layout style={{ marginRight: 0 }}>
         <Navbar />
         <Content>
-            <div style={{ position: 'relative', marginLeft: 25, marginTop: 10 }}>
-              <h1 style={{ display: 'inline', position: 'relative'  }}>Summary for the last 30 days</h1>
-              <div style={{ display: 'inline', right: 25, position: 'absolute' }}>
-              </div>
+          <div className = "headerSummaryDiv">
+              <h1 className = "headerSummaryText">Summary for the last 30 days</h1>
             </div>
 
             {/* Stats*/}
-            <div className="site-card-wrapper" style={{ marginBottom: 20, marginRight: 20, marginLeft: 20, marginTop: 20 }}>
-              <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col xs={24} xl={8}>
-                  <Card hoverable title="Number of Transactions" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
-                    <h1 style={{ fontSize: '30px' }}>4</h1>
+            <div className="site-card-wrapper" style={{marginBottom: 20}}>
+            <Row gutter={[16, 16]} style={{ margin: 10 }}>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Number of Transactions" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
+                  <h1 style={{ fontSize: '30px' }}>4</h1>
 
-                    <p style={{ bottom: 0, margin: 0 }}>Total number of trades in disclosure</p>
-                  </Card>
-                </Col>
-                <Col xs={24} xl={8}>
-                  <Card hoverable title="Total Trade Volume" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
-                    <h1 style={{ fontSize: '30px' }}>$2,350.00</h1>
+                  <p style={{ bottom: 0, margin: 0 }}>Total Number of Trades in Disclosure</p>
+                </Card>
+              </Col>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Total Trade Volume" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
+                  <h1 style={{ fontSize: '30px' }}>$2,350.00</h1>
 
-                    <p style={{ bottom: 0, margin: 0 }}>Combined volume of asset sales + purchases</p>
-                  </Card>
-                </Col>
-                <Col xs={24} xl={8}>
-                  <Card hoverable title="Trade Type Ratio" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
-                    <h1 style={{ fontSize: '30px' }}><font color='green'>4</font>/<font color='red'>4</font></h1>
+                  <p style={{ bottom: 0, margin: 0 }}>Combined Volume of Asset Sales + Purchases</p>
+                </Card>
+              </Col>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Trade Type Ratio" style={{borderRadius: '15px', boxShadow: '1px 1px 1px 1px #000000' }}>
+                  <h1 style={{ fontSize: '30px' }}><font color='green'>4</font>/<font color='red'>4</font></h1>
 
-                    <p style={{ bottom: 0, margin: 0 }}>Purchases trades / Sales trades</p>
-                  </Card>
-                </Col>
-              </Row>
+                  <p style={{ bottom: 0, margin: 0 }}>Purchases Trades / Sales Trades</p>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+
+            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"  }}>
+            <StatusFilter
+            filterBy={this.handleFilter}
+            style={{float: "left", marginLeft: 25}}
+            />
+            <TitleSearch onSearch={this.handleSearch} style={{marginRight: 20}} />
             </div>
-
 
             {/* Table */}
             <Table

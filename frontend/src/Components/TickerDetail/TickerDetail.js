@@ -1,17 +1,16 @@
+
+// IMPORTS
 import React from 'react';
-
 import { Table, Tag } from 'antd';
-import { Layout } from 'antd';
-
 import FooterComponent from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar'
 import TradingViewWidget from 'react-tradingview-widget';
 import { Themes } from 'react-tradingview-widget';
 import "./TickerDetail.css"
 import reqwest from 'reqwest';
-
-const { Content } = Layout;
-
+import {Row, Col, Card } from 'antd';
+import Sorter from '../../Utils/Sorter/Sorter';
+// Initilizing the columns of our table
 const columns = [
     {
       title: 'Transaction Date',
@@ -37,8 +36,8 @@ const columns = [
     },
     {
         title: 'Name',
-        dataIndex: 'congress_name',
-        key: 'congress_name',
+        dataIndex: 'name',
+        key: 'name',
         render: text => <a style={{ textDecoration: "none" }} href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
     },
     {
@@ -49,7 +48,8 @@ const columns = [
     },
 ];
 
-const getRandomuserParams = params => ({
+// For pagination to work we need to get the user input, such as page size, and current page number
+const getURLParams = params => ({
   results: params.pagination.pageSize,
   page: params.pagination.current,
   ...params,
@@ -70,6 +70,7 @@ class CongressTrades extends React.Component {
     this.fetch({ pagination });
   }
 
+  // function to basically keep track of the pagaination of the table and the interactions of the user with the table
   handleTableChange = (pagination, filters, sorter) => {
     this.fetch({
       sortField: sorter.field,
@@ -85,7 +86,7 @@ class CongressTrades extends React.Component {
       url: `http://127.0.0.1:8000/government/ticker/${this.props.match.params.slug}/?format=json`,
       method: 'get',
       type: 'json',
-      data: getRandomuserParams(params),
+      data: getURLParams(params),
     }).then(data => {
       console.log(data);
       this.setState({
@@ -93,8 +94,6 @@ class CongressTrades extends React.Component {
         data: data.results,
         pagination: {
           ...params.pagination,
-        //   total: 200,
-          // 200 is mock data, you should read it from server
           total: data.count,
         },
       });
@@ -106,6 +105,35 @@ class CongressTrades extends React.Component {
     return (
       <div style={{backgroundColor: "black", position: "relative"}}>
           <Navbar />
+          <div className = "headerSummaryDiv">
+              <h1 className = "headerSummaryText">Summary for the last 30 days</h1>
+            </div>
+
+              {/* Stats*/}
+            <div className="site-card-wrapper" style={{marginBottom: 20}}>
+            <Row gutter={[16, 16]} style={{ margin: 10 }}>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Number of Transactions" className = "smooth-card">
+                  <h1 style={{ fontSize: '30px' }}>4</h1>
+                  <p style={{ bottom: 0, margin: 0 }}>Total Number of Trades in Disclosure</p>
+                </Card>
+              </Col>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Total Trade Volume" className = "smooth-card">
+                  <h1 style={{ fontSize: '30px' }}>$2,350.00</h1>
+
+                  <p style={{ bottom: 0, margin: 0 }}>Combined Volume of Asset Sales + Purchases</p>
+                </Card>
+              </Col>
+              <Col xs={24} xl={8}>
+                <Card hoverable title="Trade Type Ratio" className = "smooth-card">
+                  <h1 style={{ fontSize: '30px' }}><font color='green'>4</font>/<font color='red'>4</font></h1>
+
+                  <p style={{ bottom: 0, margin: 0 }}>Purchases Trades / Sales Trades</p>
+                </Card>
+              </Col>
+            </Row>
+          </div>
             <div className="trading-widg">
             
             <TradingViewWidget

@@ -1,7 +1,7 @@
 # Purpose: This script is used to download the current and historical members of the US Congress
 
 # Import Libraries
-from ..models import CongressPerson
+# from ..models import CongressPerson
 import requests
 import json
 
@@ -22,6 +22,7 @@ def getDetails(response):    # turn response into json
     for i in range(len(objs)):
         try:
             bioguide = objs[i]["id"]["bioguide"]
+            
             imageURL = f"https://theunitedstates.io/images/congress/225x275/{bioguide}.jpg"
 
             # check if there is a full name object
@@ -41,14 +42,14 @@ def getDetails(response):    # turn response into json
             termsServed = objs[i]["terms"]
 
 
-            data.append(CongressPerson(bioguide=bioguide, firstName=firstName, lastName=lastName, fullName=fullName, currentState=state, currentParty=party, currentChamber=chamber, image=imageURL, termsServed=termsServed))
+            # data.append(CongressPerson(bioguide=bioguide, firstName=firstName, lastName=lastName, fullName=fullName, currentState=state, currentParty=party, currentChamber=chamber, image=imageURL, termsServed=termsServed))
 
         except Exception as e:
             print(e)
             continue
     
     # bulk add data
-    CongressPerson.objects.bulk_create(data, ignore_conflicts=True)
+    # CongressPerson.objects.bulk_create(data, ignore_conflicts=True)
 
 def getCurrentMembers():
     # download file as current-members.json

@@ -1,7 +1,6 @@
 import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import React from 'react';
 
-import Home from './Components/Home/Home';
 import CongressTrades from './Components/CongressTrades/CongressTrades';
 import TickerDetail from './Components/TickerDetail/TickerDetail';
 import CongressPersonDetail from './Components/CongressPersonDetail/CongressPersonDetail';
@@ -22,7 +21,6 @@ function App() {
 
                     <Route exact path="/ticker/:slug" component={TickerDetail}/>
                     <Route exact path="/congress-people/:slug" component={CongressPersonDetail}/>
-                    
                     <Redirect to="/404" />
                 </Switch>
             </div>

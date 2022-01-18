@@ -2,3 +2,22 @@
     margin: 20px;
     height: 500px;
 }
+
+.headerSummaryDiv {
+    position: relative;
+    margin-left: 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.headerSummaryText {
+    display: inline;
+    font-size: 21px;
+    position: relative;
+}
+
+.smooth-card {
+    border-radius: 15px !important; 
+    box-shadow: 1px 1px 1px 1px #000000 !important;
+}
+
