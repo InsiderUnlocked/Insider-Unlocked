@@ -75,7 +75,7 @@ const getURLParams = (params) => ({
   // Limit represents how much data per page
   limit: params.pagination.pageSize,
   // offset represents how much data is being ignored
-  offset: params.pagination.current * params.pagination.pageSize,
+  offset: (params.pagination.current - 1) * params.pagination.pageSize,
 });
 
 class CongressTrades extends React.Component {

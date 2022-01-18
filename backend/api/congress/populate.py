@@ -1,3 +1,5 @@
+# This script is sill a Work in Progress
+
 # Purpose: The purpose of this script is to populate the database with historical data, and then update the database with the current data.
 
 # Import Libraries
@@ -52,17 +54,18 @@ def getCongressPerson(name):
         name = edge_cases[name]
 
     try:
-        # time.sleep(2)
-        congressPerson, created = CongressPerson.objects.get_or_create(firstName=firstName, lastName=lastName)
-        if created == True:
-            congressPerson.name = name
-            congressPerson.save()
-        return congressPerson
-
+        congressPerson = CongressPerson.objects.filter(fullName=name)[0]
+        if "Former" not in name:
+            return congressPerson
+            print(name)   
+            print(congressPerson)   
+            exit() 
     except Exception as e:
         print(name)
+        exit()
+    
     # check to see if name already exists in database
-    congressPerson = CongressPerson.objects.filter(Q(fullName=name) | Q(firstName=firstName) | Q(lastName=lastName))
+    # congressPerson = CongressPerson.objects.filter(Q(fullName=name) | Q(firstName=firstName) | Q(lastName=lastName))
 
     if len(congressPerson) == 0:
         if "Former" not in name:
@@ -88,7 +91,7 @@ def updateDB(data):
     objs = []
     i = 0
     for row in data:
-        if i == 200:
+        if i == 7000:
             break
         i += 1
         # Get all values in a variable

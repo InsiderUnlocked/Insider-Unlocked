@@ -11,7 +11,7 @@ export const TitleSearch = ({ onSearch, ...props }) => (
     <Search
       placeholder="Enter Ticker"
       onSearch={onSearch}
-      style={{ width: 200}}
+      style={{ width: 200, marginLeft: 20}}
     />
   </div>
 );

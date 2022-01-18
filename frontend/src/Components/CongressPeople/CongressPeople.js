@@ -8,9 +8,8 @@ import { Layout, Image, Row, Col, Card } from 'antd';
 import FooterComponent from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar'
 import { TitleSearch } from '../Filters/TitleSearch';
-import { StatusFilter } from '../Filters/StatusFilter';
+
 import reqwest from 'reqwest';
-import Sorter from '../../Utils/Sorter/Sorter';
 
 // Initilze that our content is equal to the layout
 const { Content } = Layout;
@@ -51,7 +50,7 @@ const getURLParams = (params) => ({
   // Limit represents how much data per page
   limit: params.pagination.pageSize,
   // offset represents how much data is being ignored
-  offset: params.pagination.current * params.pagination.pageSize,
+  offset: (params.pagination.current - 1) * params.pagination.pageSize,
 });
 
 class CongressTrades extends React.Component {
@@ -118,46 +117,11 @@ class CongressTrades extends React.Component {
           <Navbar />
           {/* Initilzing our content */}
           <Content>
-          {/* Rendering our Header Summary Text*/}
-            <div className="headerSummaryDiv">
-              <h1 className="headerSummaryText">Summary for the last 30 days</h1>
-            </div>
-            {/* Rendering our 3 Stats Cards*/}
-            <div className="site-card-wrapper" style={{marginBottom: 20}}>
-            <Row gutter={[16, 16]} style={{ margin: 10 }}>
-              <Col xs={24} xl={8}>
-                <Card hoverable title="Number of Transactions" className = "smooth-card">
-                  <h1 style={{ fontSize: '30px' }}>4</h1>
-                  <p style={{ bottom: 0, margin: 0 }}>Total Number of Trades in Disclosure</p>
-                </Card>
-              </Col>
-              <Col xs={24} xl={8}>
-                <Card hoverable title="Total Trade Volume" className = "smooth-card">
-                  <h1 style={{ fontSize: '30px' }}>$2,350.00</h1>
 
-                  <p style={{ bottom: 0, margin: 0 }}>Combined Volume of Asset Sales + Purchases</p>
-                </Card>
-              </Col>
-              <Col xs={24} xl={8}>
-                <Card hoverable title="Trade Type Ratio" className = "smooth-card">
-                  <h1 style={{ fontSize: '30px' }}><font color='green'>4</font>/<font color='red'>4</font></h1>
-
-                  <p style={{ bottom: 0, margin: 0 }}>Purchases Trades / Sales Trades</p>
-                </Card>
-              </Col>
-            </Row>
+           {/* Rendering our Header Summary Text*/}
+           <div className="headerSummaryDiv">
+            <h1 className="headerSummaryText">All of congress</h1>
           </div>
-
-          {/* Rendering our search component*/}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <TitleSearch onSearch={this.handleSearch} style={{marginRight: 20}} />
-            </div>
 
             {/* Rendering our table */}
             <Table
@@ -174,7 +138,7 @@ class CongressTrades extends React.Component {
               // On change to this table call the handleTableChange function
               onChange={this.handleTableChange}
               // Some styling
-              scroll={{ x: "max-content", y: "48vh" }}
+              scroll={{ x: "max-content", y: "65.2vh" }}
               style={{ margin: 20, boxShadow: "1px 1px 1px 1px #ccc" }}
             />
           </Content>

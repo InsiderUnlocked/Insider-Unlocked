@@ -68,7 +68,7 @@ const getURLParams = (params) => ({
   // Limit represents how much data per page
   limit: params.pagination.pageSize,
   // offset represents how much data is being ignored
-  offset: params.pagination.current * params.pagination.pageSize,
+  offset: (params.pagination.current - 1) * params.pagination.pageSize,
 });
 
 class CongressTrades extends React.Component {
@@ -136,10 +136,10 @@ class CongressTrades extends React.Component {
         <Navbar />
         {/* Initilzing our content */}
         <Content>
-          {/* Rendering our Header Summary Text*/}
-          <div className="headerSummaryDiv">
-            <h1 className="headerSummaryText">Summary for the last 30 days</h1>
-          </div>
+            {/* Rendering our Header Summary Text*/}
+            <div className="headerSummaryDiv">
+              <h1 className="headerSummaryText">Summary for the last 30 days</h1>
+            </div>
 
           {/* Rendering our 3 Stats Cards*/}
           <div className="site-card-wrapper" style={{marginBottom: 20}}>

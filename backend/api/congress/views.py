@@ -9,14 +9,13 @@ from rest_framework.response import Response
 from .serializers import CongressPersonSerializer, CongressTradeSerializer
 from .models import CongressPerson, CongressTrade, Ticker
 
-# Django Background Tasks
+
+# TODO: Remove this in production
 # from .scripts.names import currentMembers, prevMembers
 # from .scripts.congressPeople import main as updateCongressPersonMain
 # from .scripts.house import main as houseMain
 # from .scripts.senators import main as senatorsMain
-from .populate import main as populate
-
-# TODO: Django Background Task
+from .populate import historical as populate
 class TempDBUpdatesViewSet(viewsets.ModelViewSet):
     # # Test gov contracts
     # try:
@@ -53,6 +52,7 @@ class TempDBUpdatesViewSet(viewsets.ModelViewSet):
     # print("DONE!")
     # populate()
     pass
+# TODO: Remove ecerything above this comment in production
 
 # government/congress-trades endpoint
 # Returns all of the Congress Transactions
@@ -68,10 +68,10 @@ class AllCongressViewSet(viewsets.ModelViewSet):
 
     # Adding Logic to filter the data
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['ticker', 'name']
-    search_fields = ['ticker', 'name']
-    ordering_fields = ['ticker', 'name']
-    ordering = ['transactionDate']
+    filterset_fields = ['ticker__ticker', 'name']
+    search_fields = ['ticker__ticker', 'name']
+    # ordering_fields = ['ticker', 'name']
+    # ordering = ['transactionDate']
 
 
 # government/congress-all endpoint
@@ -84,21 +84,6 @@ class AllCongressPeopleViewSet(viewsets.ModelViewSet):
 
     # Querying database for all senators that have made at least one or more transactions
     queryset = CongressPerson.objects.filter(totalTransactions__gt=0).order_by('firstName')
-
-# TODO: Summary Stats
-# government/summary-stats endpoint
-
-class SummaryStatsViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = CongressPersonSerializer
-
-#     # get all senators that have made a transaction
-
-#     queryset = CongressPerson.objects.all().order_by('firstName')
-
-    # Total Trade Volume
-    # Trade Type Ration
-    # Number of Transactions
 
 
 # government/ticker endpoint
@@ -174,4 +159,12 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-       
+# TODO: Summary Stats -- Still a Work in Progress
+# government/summary-stats endpoint
+class SummaryStatsViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = CongressPersonSerializer
+
+    # Total Trade Volume
+    # Trade Type Ration
+    # Number of Transactions
