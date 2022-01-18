@@ -10,7 +10,7 @@ router.register(r'congress-person', views.CongressPersonViewSet, basename='congr
 
 router.register(r'ticker', views.TickerViewSet, basename='Ticker')
 
-router.register(r'congress-all', views.AllCongressViewSet, basename='congressAll')
+router.register(r'congress-all', views.AllCongressViewSet, basename='congressPersonAll')
 
 
 # Wire up our API using automatic URL routing.
