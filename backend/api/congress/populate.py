@@ -71,11 +71,11 @@ def getCongressPerson(name):
         return congressPerson[0]
 
 def updateCongressPersonCount():
-    count = congressPerson.objects.all().count()
+    count = CongressPerson.objects.all().count()
     print(count)
     i = 1
     for congressPerson in CongressPerson.objects.all():
-        congressPerson.count = CongressTrade.objects.filter(name=congressPerson).count()
+        congressPerson.totalTransactions = CongressTrade.objects.filter(name=congressPerson).count()
         congressPerson.save()
 
         print("Done: ", str(i))

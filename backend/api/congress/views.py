@@ -50,8 +50,8 @@ class TempDBUpdatesViewSet(viewsets.ModelViewSet):
         # pass
 
     # print("DONE!")
-    populate()
-    # pass
+    # populate()
+    pass
 
 class AllCongressViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
@@ -60,12 +60,13 @@ class AllCongressViewSet(viewsets.ModelViewSet):
     # get all senators that have made a transaction
     queryset = CongressTrade.objects.all().order_by('transactionDate')
 
-class AllCongressViewSet(viewsets.ModelViewSet):
+class AllCongressPeopleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     serializer_class = CongressPersonSerializer
 
     # get all senators that have made a transaction
-    queryset = CongressPerson.objects.all().order_by('firstName')
+
+    queryset = CongressPerson.objects.filter(totalTransactions__gt=0).order_by('firstName')
 
 
 class CongressPersonViewSet(viewsets.ModelViewSet):
