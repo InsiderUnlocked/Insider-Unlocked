@@ -6,7 +6,10 @@ from .serializers import CongressPersonSerializer, CongressTradeSerializer
 from .models import CongressPerson, CongressTrade, Ticker
 
 from rest_framework.response import Response
-from .pagination import StandardResultsSetPagination, PageNumberPagination
+# from .pagination import StandardResultsSetPagination
+
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 # Django Background Tasks
 # from .scripts.names import currentMembers, prevMembers
@@ -54,11 +57,19 @@ class TempDBUpdatesViewSet(viewsets.ModelViewSet):
     pass
 
 class AllCongressViewSet(viewsets.ModelViewSet):
+
     permission_classes = (permissions.AllowAny,)
+    # get all senators that have made a transaction
+    queryset = CongressTrade.objects.all()
     serializer_class = CongressTradeSerializer
 
-    # get all senators that have made a transaction
-    queryset = CongressTrade.objects.all().order_by('transactionDate')
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['ticker', 'name']
+    search_fields = ['=ticker', 'name']
+    ordering_fields = ['ticker', 'name']
+    ordering = ['transaction_date']
+
+
 
 class AllCongressPeopleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
@@ -104,48 +115,34 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
-        paginator = PageNumberPagination()
-        result_page = paginator.paginate_queryset(self.get_queryset(), request)
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        # return self.get_paginated_response(serializer.data)
+        result = self.get_queryset()
 
-        # instance = self.get_queryset()
-        # serializer = CongressTradeSerializer(instance, many=True)
-        return Response(serializer.data)
+        result_page = self.paginate_queryset(result)
+        serializer = CongressTradeSerializer(result_page, many=True)
+
+        return self.get_paginated_response(serializer.data)
+
        
 
 
 class TickerViewSet(viewsets.ModelViewSet):
     # Get slug from url
     # permission_classes = (permissions.AllowAny,)    
-    queryset = CongressTrade.objects.all()
-    serializer_class = CongressTradeSerializer  
     lookup_field = 'ticker'
-    pagination_class = StandardResultsSetPagination
+    serializer_class = CongressTradeSerializer
+    queryset = CongressTrade.objects.all()
 
     # filter by slug in url in django rest framework modelviewset
     def get_queryset(self):
         ticker = Ticker.objects.get(ticker=self.kwargs['ticker'])
-        print(ticker)
-
-        queryset = CongressTrade.objects.filter(ticker=ticker).order_by('-transactionDate')
-        print(queryset)
-        
-
+        queryset = CongressTrade.objects.filter(ticker=ticker).order_by('-transactionDate')        
         return queryset
     
     def retrieve(self, request, *args, **kwargs):
-        paginator = StandardResultsSetPagination()
-        result_page = paginator.paginate_queryset(self.get_queryset(), request)
-        serializer = self.get_serializer(result_page, many=True)
+        result = self.get_queryset()
 
-        return paginator.get_paginated_response(serializer.data)
-    
-    # def retrieve(self, request, *args, **kwargs):
-    #     # implement limit queryset
-    #     instance = self.get_queryset()
-    #     pagination_class = LimitOffsetPagination 
-    #     serializer = CongressTradeSerializer(instance, many=True)[:limit]
-    #     return Response(serializer.data)
+        result_page = self.paginate_queryset(result)
+        serializer = CongressTradeSerializer(result_page, many=True)
+
+        return self.get_paginated_response(serializer.data)
 
