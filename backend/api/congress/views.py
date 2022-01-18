@@ -65,9 +65,9 @@ class AllCongressViewSet(viewsets.ModelViewSet):
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['ticker', 'name']
-    search_fields = ['=ticker', 'name']
+    search_fields = ['ticker', 'name']
     ordering_fields = ['ticker', 'name']
-    ordering = ['transaction_date']
+    ordering = ['transactionDate']
 
 
 
