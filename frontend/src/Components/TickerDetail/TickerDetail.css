@@ -26,3 +26,6 @@
     box-shadow: 1px 1px 1px 1px #000000 !important;
 }
 
+.ant-card-head {
+    border-radius: 0 !important;
+}

@@ -92,6 +92,18 @@ class CongressTrades extends React.Component {
     },
     // Initilzing a skeleton loader
     loading: false,
+    // Initilze stats
+    stats: {
+      // Intilize the total number of records
+      total: 0,
+      // Intilize the total volume
+      volume: 0,
+      // intilize the number of purchases
+      purchases: 0,
+      // intilize the number of sales
+      sales: 0,
+    },
+    justTest: 0,
   };
   // This function is called when this component is first mounted to DOM(meaning when its first visually represented)
   componentDidMount() {
@@ -120,6 +132,8 @@ class CongressTrades extends React.Component {
       data: getURLParams(params),
       // Upon the requeset validiating
     }).then((data) => {
+
+
       // Assign variables respectively
       this.setState({
         // Set skeleton loader to false as data is loaded
@@ -131,12 +145,32 @@ class CongressTrades extends React.Component {
           ...params.pagination,
           total: data.count - params.pagination.pageSize,
         },
+
+      // once we gets stats variables, connect to the stats backend
       });
+    }).then(() => {
+      reqwest({
+        url: `http://127.0.0.1:8000/government/summary-stats/90/?format=json`,
+        method: "get",
+        type: "json",
+        // Upon the requeset validiating
+      }).then((response) => {
+        this.setState({
+          stats: {
+            // Assign the stats variables
+            volume: response.results[0].totalVolume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            total: response.results[0].total,
+            purchases: response.results[0].purchases,
+            sales: response.results[0].sales,
+          },
+        });
+      })
+      
     });
   };
 
   render() {
-    const { data, pagination, loading } = this.state;
+    const { data, pagination, loading, stats } = this.state;
     return (
       <Layout style={{ marginRight: 0 }}>
         {/* Rendering our navbar*/}
@@ -155,10 +189,7 @@ class CongressTrades extends React.Component {
             <Card
               hoverable
               title={this.props.match.params.slug}
-              style={{
-                borderRadius: "15px",
-                boxShadow: "1px 1px 1px 1px #000000",
-              }}
+              className = "smooth-card"
             >
               <Avatar size={125} icon={<UserOutlined />} />
             </Card>
@@ -171,12 +202,9 @@ class CongressTrades extends React.Component {
                 <Card
                   hoverable
                   title="Number of Transactions"
-                  style={{
-                    borderRadius: "15px",
-                    boxShadow: "1px 1px 1px 1px #000000",
-                  }}
+                  className = "smooth-card"
                 >
-                  <h1 style={{ fontSize: "30px" }}>4</h1>
+                  <h1 style={{ fontSize: "30px" }}>{stats.total}</h1>
 
                   <p style={{ bottom: 0, margin: 0 }}>
                     Total Number of Trades in Disclosure
@@ -187,12 +215,9 @@ class CongressTrades extends React.Component {
                 <Card
                   hoverable
                   title="Total Trade Volume"
-                  style={{
-                    borderRadius: "15px",
-                    boxShadow: "1px 1px 1px 1px #000000",
-                  }}
+                  className = "smooth-card"
                 >
-                  <h1 style={{ fontSize: "30px" }}>$2,350.00</h1>
+                  <h1 style={{ fontSize: "30px" }}>${stats.volume}</h1>
 
                   <p style={{ bottom: 0, margin: 0 }}>
                     Combined Volume of Asset Sales + Purchases
@@ -203,13 +228,10 @@ class CongressTrades extends React.Component {
                 <Card
                   hoverable
                   title="Trade Type Ratio"
-                  style={{
-                    borderRadius: "15px",
-                    boxShadow: "1px 1px 1px 1px #000000",
-                  }}
+                  className = "smooth-card"
                 >
                   <h1 style={{ fontSize: "30px" }}>
-                    <font color="green">4</font>/<font color="red">4</font>
+                    <font color="green">{stats.purchases}</font>/<font color="red">{stats.sales}</font>
                   </h1>
 
                   <p style={{ bottom: 0, margin: 0 }}>

@@ -86,6 +86,8 @@ def updateCongressPersonCount():
         print("Done: ", str(i))
         i += 1
 
+def updateStats():
+    pass
 
 def updateDB(data):
     objs = []
@@ -146,6 +148,7 @@ def updateDB(data):
     CongressTrade.objects.bulk_create(objs, ignore_conflicts=True)
 
     updateCongressPersonCount()
+    updateStats()
 
 def historical():
     # Load historical data  

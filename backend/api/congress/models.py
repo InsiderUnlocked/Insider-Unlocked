@@ -48,7 +48,7 @@ class CongressPerson(models.Model):
 
     # Update congress persons transaction count every time the object is saved 
     def updateStats(self):
-        transactions = CongressTrade.objects.filter(transactionDate__lte=datetime.datetime.today(), transactionDate__gt=datetime.datetime.today()-datetime.timedelta(days=90))
+        transactions = CongressTrade.objects.filter(name=self, transactionDate__lte=datetime.datetime.today(), transactionDate__gt=datetime.datetime.today()-datetime.timedelta(days=90))
 
         # Get the number of transactions by congress person
         total = transactions.count()
@@ -86,7 +86,7 @@ class CongressPerson(models.Model):
         sumMid = (sumMax + sumMin) / 2
 
         # update model
-        CongressPerson.objects.filter(fullName=self.fullName).update(
+        CongressPerson.objects.filter(bioguide=self.bioguide).update(
             totalTransactions=transactions.count(), 
             purchases=transactions.filter(transactionType='Purchase').count(), 
             sales=transactions.filter(transactionType__startswith='Sale').count(),
@@ -124,7 +124,6 @@ class Ticker(models.Model):
     purchases = models.IntegerField(blank=True, null=True, default=0)
     sales = models.IntegerField(blank=True, null=True, default=0)
 
-
     
     def __str__(self):
         return self.ticker
@@ -132,7 +131,7 @@ class Ticker(models.Model):
 
     # Update congress persons transaction count every time the object is saved 
     def updateStats(self):
-        transactions = CongressTrade.objects.filter(transactionDate__lte=datetime.datetime.today(), transactionDate__gt=datetime.datetime.today()-datetime.timedelta(days=90))
+        transactions = CongressTrade.objects.filter(ticker=self, transactionDate__lte=datetime.datetime.today(), transactionDate__gt=datetime.datetime.today()-datetime.timedelta(days=90))
         print(transactions)
         # Get the number of transactions by congress person
         total = transactions.count()
@@ -171,7 +170,7 @@ class Ticker(models.Model):
 
         # update model
         try:
-            Ticker.objects.filter(id=self.id).update(
+            Ticker.objects.filter(ticker=self).update(
                 totalTransactions=transactions.count(), 
                 purchases=transactions.filter(transactionType='Purchase').count(), 
                 sales=transactions.filter(transactionType__startswith='Sale').count(),

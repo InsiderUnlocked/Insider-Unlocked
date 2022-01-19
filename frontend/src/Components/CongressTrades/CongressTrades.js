@@ -89,11 +89,12 @@ class CongressTrades extends React.Component {
     ticker: "",
     // Initilzing a skeleton loader
     loading: false,
-
-    totalTradeVolume: 0,
-    totalTransactions: 0,
-    totalPurchases: 0,
-    totalSales: 0,
+    stats: {
+      volume: 0,
+      total: 0,
+      purchases: 0,
+      sales: 0,
+    }
   };
   // This function is called when this component is first mounted to DOM(meaning when its first visually represented)
   componentDidMount() {
@@ -143,17 +144,30 @@ class CongressTrades extends React.Component {
           total: data.count - params.pagination.pageSize,
         },
 
-        // convert total trade volume to dollars with commas with regex
-        totalTradeVolume: data.results[0].totalVolume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-        totalTransactions: data.results[0].total,
-        totalPurchases: data.results[0].purchases,
-        totalSales: data.results[0].sales,
       });
+    }).then(() => {
+      reqwest({
+        url: `http://127.0.0.1:8000/government/summary-stats/90/?format=json`,
+        method: "get",
+        type: "json",
+        // Upon the requeset validiating
+      }).then((response) => {
+        this.setState({
+          stats: {
+            // Assign the stats variables
+            volume: response.results[0].totalVolume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            total: response.results[0].total,
+            purchases: response.results[0].purchases,
+            sales: response.results[0].sales,
+          },
+        });
+      })
+      
     });
   };
 
   render() {
-    const { data, pagination, loading, totalPurchases, totalSales, totalTradeVolume, totalTransactions } = this.state;
+    const { data, pagination, loading, stats } = this.state;
     return (
       <Layout style={{ marginRight: 0, minHeight: 1100}}>
         {/* Rendering our navbar*/}
@@ -170,20 +184,20 @@ class CongressTrades extends React.Component {
             <Row gutter={[16, 16]} style={{ margin: 10 }}>
               <Col xs={24} xl={8}>
                 <Card hoverable title="Number of Transactions" className = "smooth-card">
-                  <h1 style={{ fontSize: '30px' }}>{totalTransactions}</h1>
+                  <h1 style={{ fontSize: '30px' }}>{stats.total}</h1>
                   <p style={{ bottom: 0, margin: 0 }}>Total Number of Trades in Disclosure</p>
                 </Card>
               </Col>
               <Col xs={24} xl={8}>
                 <Card hoverable title="Total Trade Volume" className = "smooth-card">
-                  <h1 style={{ fontSize: '30px' }}>${totalTradeVolume}</h1>
+                  <h1 style={{ fontSize: '30px' }}>${stats.volume}</h1>
 
                   <p style={{ bottom: 0, margin: 0 }}>Combined Volume of Asset Sales + Purchases</p>
                 </Card>
               </Col>
               <Col xs={24} xl={8}>
                 <Card hoverable title="Trade Type Ratio" className = "smooth-card">
-                  <h1 style={{ fontSize: '30px' }}><font color='green'>{totalPurchases}</font>/<font color='red'>{totalSales}</font></h1>
+                  <h1 style={{ fontSize: '30px' }}><font color='green'>{stats.purchases}</font>/<font color='red'>{stats.sales}</font></h1>
 
                   <p style={{ bottom: 0, margin: 0 }}>Purchases Trades / Sales Trades</p>
                 </Card>
