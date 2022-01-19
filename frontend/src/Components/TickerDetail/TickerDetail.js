@@ -160,10 +160,10 @@ class CongressTrades extends React.Component {
         this.setState({
           stats: {
             // Assign the stats variables
-            volume: response.totalVolumeTransactions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-            total: response.totalTransactions,
-            purchases: response.purchases,
-            sales: response.sales,
+            volume: response.results[0].totalVolumeTransactions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            total: response.results[0].totalTransactions,
+            purchases: response.results[0].purchases,
+            sales: response.results[0].sales,
           },
         });
       })

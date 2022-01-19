@@ -26,7 +26,7 @@ const columns = [
     dataIndex: "ticker",
     key: "ticker",
     render: (text) => (
-      <a href={`http://localhost:3000/ticker/${text}`}>{text}</a>
+      text === ("-") ? "Other Assets" : <a href={`http://localhost:3000/ticker/${text}`}>{text}</a>
     ),
   },
   {
@@ -53,7 +53,7 @@ const columns = [
     dataIndex: "name",
     key: "name",
     render: (text) => (
-      <a href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
+      <a href={`http://localhost:3000/congress-people/${text.replace(/\./g, " ")}`}>{text}</a>
     ),
   },
   {
@@ -225,6 +225,7 @@ class CongressTrades extends React.Component {
             }}
           >
             <TitleSearch
+              
               onSearch={this.handleSearch}
               style={{ marginRight: 20 }}
             />

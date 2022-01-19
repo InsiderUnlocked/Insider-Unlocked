@@ -158,7 +158,7 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
         lastName = congressPerson.split()[-1]
 
         # Get the id of the congress person passed into the URL 
-        name = CongressPerson.objects.filter(firstName=firstName, lastName=lastName)[0]
+        name = CongressPerson.objects.filter(firstName__icontains=firstName, lastName__icontains=lastName)[0]
 
         # Get all transactions by congress person
         queryset = CongressTrade.objects.filter(name=name)
@@ -190,7 +190,7 @@ class TickerStatsViewSet(viewsets.ModelViewSet):
     # URL parameter passed into url that also exists in the CongressTrade and CongressPerson models 
     lookup_field = 'ticker'
     # Initiliazing our seializer class
-    serializer_class = TickerSerializer
+    # serializer_class = TickerSerializer
     
     # filter by slug in url in django rest framework modelviewset
     def get_queryset(self):
@@ -199,6 +199,20 @@ class TickerStatsViewSet(viewsets.ModelViewSet):
         queryset = Ticker.objects.filter(ticker=ticker)
 
         return queryset 
+    
+    
+   # Serialize and Paginate the data    
+    def retrieve(self, request, *args, **kwargs):
+        # Get the queried data
+        result = self.get_queryset()
+
+        # Paginate the data
+        result_page = self.paginate_queryset(result)
+        
+        # Serialize the data - (convert to JSON)
+        serializer = TickerSerializer(result_page, many=True)
+
+        return self.get_paginated_response(serializer.data)
 
 class CongressStatsViewSet(viewsets.ModelViewSet):
 # Permission needed to access endpoint
@@ -214,12 +228,26 @@ class CongressStatsViewSet(viewsets.ModelViewSet):
 
         # Parse slug into first and last name
         firstName = name.split()[0]
-        lastName = name.split()[1]
+        lastName = name.split()[-1]
 
         # Get the id of the congress person passed into the URL 
-        queryset = CongressPerson.objects.filter(firstName=firstName, lastName=lastName)
+        queryset = CongressPerson.objects.filter(fullName__icontains=firstName, lastName__icontains=lastName)
+        print(queryset)
 
         return queryset 
+
+    # Serialize and Paginate the data    
+    def retrieve(self, request, *args, **kwargs):
+        # Get the queried data
+        result = self.get_queryset()
+
+        # Paginate the data
+        result_page = self.paginate_queryset(result)
+        
+        # Serialize the data - (convert to JSON)
+        serializer = CongressPersonSerializer(result_page, many=True)
+
+        return self.get_paginated_response(serializer.data)
 
 
 # TODO: Summary Stats -- Still a Work in Progress

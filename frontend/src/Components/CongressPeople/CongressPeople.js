@@ -4,7 +4,7 @@
 // Imports
 import React from 'react';
 import { Table, Tag } from 'antd';
-import { Layout, Image, Row, Col, Card } from 'antd';
+import { Layout, Image, Row, Col, Card, Space } from 'antd';
 import FooterComponent from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar'
 import { TitleSearch } from "../../Utils/Search/TitleSearch";
@@ -19,8 +19,8 @@ const columns = [
       title: 'Full Name',
       dataIndex: 'fullName',
       key: 'fullName',
-      // slice the text to only have the first and last word
-      render: text => <a href={`https://insiderunlocked.web.app/congress-people/${text.split(' ').slice(0, 2).join(' ')}`}>{text}</a>
+      // remove dots from the name
+      render: text => <a href={`https://insiderunlocked.web.app/congress-people/${text.replace(/\./g, " ")}`}>{text}</a>
     },
     {
       title: 'Party',
@@ -137,39 +137,31 @@ class CongressTrades extends React.Component {
            <div className="headerSummaryDiv">
             <h1 className="headerSummaryText">All of congress</h1>
           </div>
-          
-          {/* Rendering our search component*/}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <TitleSearch
-              onSearch={this.handleSearch}
-              style={{ marginRight: 20 }}
-            />
-          </div>
+          {/* create a grid of cards */}
+          <Row gutter={[24, 24]} style={{ margin: 10 }}>
+            {/* Loop through the data and render the cards */}
+            {data.map((item) => (
+              <Col xs={24} xl={4} key={item.id}>
+                <Card
+                  hoverable
+                  style={{ width: 240 }}
+                  cover={<img alt="example" src={item.image} style={{height: 250}} />}
+                >
+                  {/* make text bold*/}
+                  
+                  <p> Full Name: {item.fullName}</p>
+                  <p>{item.currentParty}</p>
+                  <p>{item.currentChamber}</p>
+                  <p>{item.currentState}</p>
 
-            {/* Rendering our table */}
-            <Table
-              // Make columns and rows bordered
-              bordered
-              // Assign columns
-              columns={columns}
-              // Assign data
-              dataSource={data}
-              // Assign pagination
-              pagination={pagination}
-              // Assign skeleton loader
-              loading={loading}
-              // On change to this table call the handleTableChange function
-              onChange={this.handleTableChange}
-              // Some styling
-              scroll={{ x: "max-content", y: "65.2vh" }}
-              style={{ margin: 20, boxShadow: "1px 1px 1px 1px #ccc" }}
-            />
+                </Card>
+              </Col>
+            ))}
+          
+          </Row>
+          <div className="headerSummaryDiv">
+            
+          </div>
           </Content>
           <FooterComponent />
         </Layout>

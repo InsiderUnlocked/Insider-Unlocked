@@ -20,19 +20,13 @@ const columns = [
     title: "Transaction Date",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    render: (text) => <a>{text}</a>,
   },
   {
     title: "Ticker",
     dataIndex: "ticker",
     key: "ticker",
     render: (text) => (
-      <a
-        style={{ textDecoration: "none" }}
-        href={`https://insiderunlocked.web.app/ticker/${text}`}
-      >
-        {text}
-      </a>
+      text === ("-") ? "Other Assets" : <a href={`http://localhost:3000/ticker/${text}`}>{text}</a>
     ),
   },
   {
@@ -102,13 +96,13 @@ class CongressTrades extends React.Component {
     // Initilze stats
     stats: {
       // Intilize the total number of records
-      total: "lodaing...",
+      total: "loading...",
       // Intilize the total volume
-      volume: "lodaing...",
+      volume: "loading...",
       // intilize the number of purchases
-      purchases: "lodaing...",
+      purchases: "loading...",
       // intilize the number of sales
-      sales: "lodaing...",
+      sales: "loading...",
 
       image: "",
     },
@@ -150,6 +144,7 @@ class CongressTrades extends React.Component {
       data: getURLParams(params),
       // Upon the requeset validiating
     }).then((data) => {
+      console.log(this.props.match.params.slug);
       // Assign variables respectively
       this.setState({
         // Set skeleton loader to false as data is loaded
@@ -176,11 +171,11 @@ class CongressTrades extends React.Component {
         this.setState({
           stats: {
             // Assign the stats variables
-            volume: response.totalVolumeTransactions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-            total: response.totalTransactions,
-            purchases: response.purchases,
-            sales: response.sales,
-            image: response.image,
+            volume: response.results[0].totalVolumeTransactions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            total: response.results[0].totalTransactions,
+            purchases: response.results[0].purchases,
+            sales: response.results[0].sales,
+            image: response.results[0].image,
           },
         });
       })
