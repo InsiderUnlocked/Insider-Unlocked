@@ -4,7 +4,7 @@
 // Imports
 import React from 'react';
 import { Table, Tag } from 'antd';
-import { Layout, Image, Row, Col, Card, Space } from 'antd';
+import { Layout, Image, Row, Col, Card, Avatar} from 'antd';
 import FooterComponent from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar'
 import { TitleSearch } from "../../Utils/Search/TitleSearch";
@@ -13,6 +13,7 @@ import reqwest from 'reqwest';
 // Initilze that our content is equal to the layout
 const { Content } = Layout;
 
+const { Meta } = Card;
 // Initilze our columns
 const columns = [
     {
@@ -141,20 +142,22 @@ class CongressTrades extends React.Component {
           <Row gutter={[24, 24]} style={{ margin: 10 }}>
             {/* Loop through the data and render the cards */}
             {data.map((item) => (
-              <Col xs={24} xl={4} key={item.id}>
+              <Col xs={24} xl={6} key={item.id}>
+                {/* add link to card */}
+                <a href={`https://insiderunlocked.web.app/congress-people/${item.fullName.replace(/\./g, " ")}`}>
                 <Card
                   hoverable
-                  style={{ width: 240 }}
-                  cover={<img alt="example" src={item.image} style={{height: 250}} />}
+                  style={{ width: 450 }}
+                  className='smooth-card'
                 >
-                  {/* make text bold*/}
-                  
-                  <p> Full Name: {item.fullName}</p>
-                  <p>{item.currentParty}</p>
-                  <p>{item.currentChamber}</p>
-                  <p>{item.currentState}</p>
+                <Meta
+                  avatar={<Avatar size={120} src={item.image} />}
+                  title={item.fullName}
+                  description={item.currentParty+ ', ' + item.currentChamber + ', ' + item.currentState}
+                />
 
                 </Card>
+                </a>
               </Col>
             ))}
           
