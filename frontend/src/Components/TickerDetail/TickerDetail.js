@@ -128,6 +128,7 @@ class CongressTrades extends React.Component {
       name,
     });
   };
+  
   fetch = (params = {}) => {
     this.setState({ loading: true });
     reqwest({

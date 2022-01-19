@@ -77,6 +77,8 @@ const getURLParams = (params) => ({
   limit: params.pagination.pageSize,
   // offset represents how much data is being ignored
   offset: (params.pagination.current - 1) * params.pagination.pageSize,
+  // Set the name search
+  ticker: params.ticker,
 });
 
 class CongressTrades extends React.Component {
@@ -93,6 +95,10 @@ class CongressTrades extends React.Component {
     },
     // Initilzing a skeleton loader
     loading: false,
+
+    // Keeps track of the user's search
+    ticker: "",
+
     // Initilze stats
     stats: {
       // Intilize the total number of records
@@ -122,6 +128,16 @@ class CongressTrades extends React.Component {
     });
   };
 
+  handleSearch = (ticker, pagination) => {
+    // Handles the search, takes the value of the user input
+    // make this input part of the request url
+    this.setState({ ticker });
+    // Fetch the data with the new ticker
+    this.fetch({
+      pagination,
+      ticker,
+    });
+  };
   // Request the info from the backend
   fetch = (params = {}) => {
     // Set the skeleton loader to true while we are making the request
@@ -134,8 +150,6 @@ class CongressTrades extends React.Component {
       data: getURLParams(params),
       // Upon the requeset validiating
     }).then((data) => {
-
-
       // Assign variables respectively
       this.setState({
         // Set skeleton loader to false as data is loaded

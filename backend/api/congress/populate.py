@@ -54,7 +54,7 @@ def getCongressPerson(name):
         name = edge_cases[name]
 
     try:
-        congressPerson = CongressPerson.objects.filter(fullName=name)[0]
+        congressPerson = CongressPerson.objects.filter(fullName__icontains=name)[0]
         if "Former" not in name:
             return congressPerson
             print(name)   

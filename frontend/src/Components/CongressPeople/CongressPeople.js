@@ -19,7 +19,8 @@ const columns = [
       title: 'Full Name',
       dataIndex: 'fullName',
       key: 'fullName',
-      render: text => <a href={`https://insiderunlocked.web.app/congress-people/${text}`}>{text}</a>
+      // slice the text to only have the first and last word
+      render: text => <a href={`https://insiderunlocked.web.app/congress-people/${text.split(' ').slice(0, 2).join(' ')}`}>{text}</a>
     },
     {
       title: 'Party',

@@ -72,8 +72,8 @@ class AllCongressViewSet(viewsets.ModelViewSet):
 
     # Adding Logic to filter the data
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['ticker__ticker', 'name__fullName']
-    search_fields = ['ticker__ticker', 'name__fullName']
+    filterset_fields = ['ticker__ticker', 'name__fullName', 'transactionType']
+    search_fields = ['ticker__ticker', 'name__fullName', 'transactionType']
     # ordering_fields = ['ticker', 'name']
     ordering = ['-transactionDate']
 
@@ -142,11 +142,16 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
     # Initiliazing our seializer class
     serializer_class = CongressTradeSerializer
 
-
+    # Adding Logic to filter the data
+    # filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    # filterset_fields = ['ticker']
+    # search_fields = ['ticker']
+        
     # filter by slug in url in django rest framework modelviewset
     def get_queryset(self):
         # Get the name that was passed in the URL
         congressPerson = self.kwargs['name']
+        ticker = self.request.query_params.get('ticker')
 
         # Parse slug into first and last name
         firstName = congressPerson.split()[0]
@@ -154,8 +159,14 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
 
         # Get the id of the congress person passed into the URL 
         name = CongressPerson.objects.filter(firstName=firstName, lastName=lastName)[0]
+
         # Get all transactions by congress person
-        queryset = CongressTrade.objects.filter(name=name).order_by('-transactionDate')
+        queryset = CongressTrade.objects.filter(name=name)
+    
+        if ticker is not None:
+            queryset = queryset.filter(ticker__ticker__icontains=ticker)
+         
+            print(queryset)
 
         return queryset
 
