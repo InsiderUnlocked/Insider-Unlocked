@@ -2,7 +2,7 @@
 
 # Import Libraries
 from django.contrib import admin
-from .models import CongressPerson, CongressTrade, Ticker
+from .models import CongressPerson, CongressTrade, Ticker, SummaryStat
 
 # Customize ticker admin view
 class TickerAdmin(admin.ModelAdmin):
@@ -27,7 +27,13 @@ class CongressTradeAdmin(admin.ModelAdmin):
     # Field that we are searching for
     search_fields = ['ticker']
 
+# Customize Congress Trade Admin
+class SummaryStatAdmin(admin.ModelAdmin):
+    # Fields that will appear in the admin table view
+    list_display =  ('total', 'purchases', 'sales', 'totalVolume', 'timeframe',)
+
 # Register the admin views
 admin.site.register(Ticker, TickerAdmin)
 admin.site.register(CongressPerson, CongressPersonAdmin)
 admin.site.register(CongressTrade, CongressTradeAdmin)
+admin.site.register(SummaryStat, SummaryStatAdmin)

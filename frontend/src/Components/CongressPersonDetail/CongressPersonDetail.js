@@ -7,7 +7,7 @@ import { Layout, Col, Row, DatePicker } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import FooterComponent from "../Footer/Footer";
 import Navbar from "../Navbar/Navbar";
-import { TitleSearch } from "../Filters/TitleSearch";
+import { TitleSearch } from "../../Utils/Search/TitleSearch";
 import reqwest from "reqwest";
 import "./CongressPersonDetail.css";
 
@@ -29,7 +29,7 @@ const columns = [
     render: (text) => (
       <a
         style={{ textDecoration: "none" }}
-        href={`http://localhost:3000/ticker/${text}`}
+        href={`https://insiderunlocked.web.app/ticker/${text}`}
       >
         {text}
       </a>

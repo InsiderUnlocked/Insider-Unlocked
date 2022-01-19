@@ -7,8 +7,7 @@ import { Table, Tag } from 'antd';
 import { Layout, Image, Row, Col, Card } from 'antd';
 import FooterComponent from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar'
-import { TitleSearch } from '../Filters/TitleSearch';
-
+import { TitleSearch } from "../../Utils/Search/TitleSearch";
 import reqwest from 'reqwest';
 
 // Initilze that our content is equal to the layout
@@ -20,7 +19,7 @@ const columns = [
       title: 'Full Name',
       dataIndex: 'fullName',
       key: 'fullName',
-      render: text => <a href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
+      render: text => <a href={`https://insiderunlocked.web.app/congress-people/${text}`}>{text}</a>
     },
     {
       title: 'Party',
@@ -47,6 +46,8 @@ const columns = [
 
 // For pagination to work we need to get the user input, such as page size, and current page number this is what the function does
 const getURLParams = (params) => ({
+  // Set the name search
+  search: params.name,
   // Limit represents how much data per page
   limit: params.pagination.pageSize,
   // offset represents how much data is being ignored
@@ -65,6 +66,8 @@ class CongressTrades extends React.Component {
       // Current page size of the user's table
       pageSize: 20,
     },
+
+    name: "",
     // Initilzing a skeleton loader
     loading: false,
   };
@@ -80,6 +83,17 @@ class CongressTrades extends React.Component {
     // Fetch the pagination variable to validate the pagination request of the user
     this.fetch({
       pagination,
+    });
+  };
+
+  handleSearch = (name, pagination) => {
+    // Handles the search, takes the value of the user input
+    // make this input part of the request url
+    this.setState({ name });
+    // Fetch the data with the new ticker
+    this.fetch({
+      pagination,
+      name,
     });
   };
   // Request the info from the backend
@@ -112,7 +126,7 @@ class CongressTrades extends React.Component {
   render() {
     const { data, pagination, loading } = this.state;
     return (
-        <Layout style={{ marginRight: 0 }}>
+        <Layout style={{ marginRight: 0, minHeight: 1100}}>
           {/* Rendering our navbar*/}
           <Navbar />
           {/* Initilzing our content */}
@@ -121,6 +135,20 @@ class CongressTrades extends React.Component {
            {/* Rendering our Header Summary Text*/}
            <div className="headerSummaryDiv">
             <h1 className="headerSummaryText">All of congress</h1>
+          </div>
+          
+          {/* Rendering our search component*/}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <TitleSearch
+              onSearch={this.handleSearch}
+              style={{ marginRight: 20 }}
+            />
           </div>
 
             {/* Rendering our table */}

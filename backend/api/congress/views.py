@@ -5,10 +5,14 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import filters
+from .serializers import CongressPersonSerializer, CongressTradeSerializer, SummaryStatSerializer
+from .models import CongressPerson, CongressTrade, Ticker, SummaryStat
 
-from .serializers import CongressPersonSerializer, CongressTradeSerializer
-from .models import CongressPerson, CongressTrade, Ticker
 
+
+from django.db.models import Q
+import datetime
 
 # TODO: Remove this in production
 # from .scripts.names import currentMembers, prevMembers
@@ -51,8 +55,10 @@ class TempDBUpdatesViewSet(viewsets.ModelViewSet):
 
     # print("DONE!")
     # populate()
+    # SummaryStat.objects.create(totalTransactions=14, purchases=5, sales=4, totalVolume=123, timeframe=120)
     pass
 # TODO: Remove ecerything above this comment in production
+
 
 # government/congress-trades endpoint
 # Returns all of the Congress Transactions
@@ -67,11 +73,11 @@ class AllCongressViewSet(viewsets.ModelViewSet):
     serializer_class = CongressTradeSerializer
 
     # Adding Logic to filter the data
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['ticker__ticker', 'name']
-    search_fields = ['ticker__ticker', 'name']
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['ticker__ticker', 'name__fullName']
+    search_fields = ['ticker__ticker', 'name__fullName']
     # ordering_fields = ['ticker', 'name']
-    # ordering = ['transactionDate']
+    ordering = ['-transactionDate']
 
 
 # government/congress-all endpoint
@@ -81,10 +87,13 @@ class AllCongressPeopleViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     # Convering the data to JSON
     serializer_class = CongressPersonSerializer
-
     # Querying database for all senators that have made at least one or more transactions
     queryset = CongressPerson.objects.filter(totalTransactions__gt=0).order_by('firstName')
-
+    
+    # Adding Logic to filter the data
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['fullName']
+    search_fields = ['fullName']
 
 # government/ticker endpoint
 # Returns all of transactions that involved a specific ticker which is passed in the URL
@@ -96,12 +105,19 @@ class TickerViewSet(viewsets.ModelViewSet):
     # Initiliazing our seializer class
     serializer_class = CongressTradeSerializer
 
+
     # filter by slug in url in django rest framework modelviewset
     def get_queryset(self):
         # Query Database for the ticker id  
         ticker = Ticker.objects.get(ticker=self.kwargs['ticker'])
-        # Use the ticker id to filter all transactions which contain that ticker id
-        queryset = CongressTrade.objects.filter(ticker=ticker).order_by('-transactionDate')        
+        keywords = self.request.query_params.get('search')
+
+        if keywords is not None:
+            queryset = CongressTrade.objects.filter(ticker=ticker, name__fullName__contains=keywords).order_by('-transactionDate')        
+        else:
+            # Use the ticker id to filter all transactions which contain that ticker id
+            queryset = CongressTrade.objects.filter(ticker=ticker).order_by('-transactionDate')        
+
         return queryset
 
     # Serialize and Paginate the data    
@@ -114,7 +130,7 @@ class TickerViewSet(viewsets.ModelViewSet):
         
         # Serialize the data - (convert to JSON)
         serializer = CongressTradeSerializer(result_page, many=True)
-
+        
         return self.get_paginated_response(serializer.data)
 
 # government/congress-trades endpoint
@@ -161,10 +177,34 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
 
 # TODO: Summary Stats -- Still a Work in Progress
 # government/summary-stats endpoint
+from django.db.models import Count
 class SummaryStatsViewSet(viewsets.ModelViewSet):
+    # Permission needed to access endpoint
     permission_classes = (permissions.AllowAny,)
+    # URL parameter passed into url that also exists in the CongressTrade and CongressPerson models 
+    lookup_field = 'timeframe'
+    # Initiliazing our seializer class
     serializer_class = CongressPersonSerializer
+    
+    # filter by slug in url in django rest framework modelviewset
+    def get_queryset(self):
+        timeframe = self.kwargs['timeframe']
 
-    # Total Trade Volume
-    # Trade Type Ration
-    # Number of Transactions
+        queryset = SummaryStat.objects.filter(timeframe=timeframe)
+
+        return queryset
+
+
+    # Serialize and Paginate the data    
+    def retrieve(self, request, *args, **kwargs):
+        # Get the queried data
+        result = self.get_queryset()
+
+        # Paginate the data
+        result_page = self.paginate_queryset(result)
+        
+        # Serialize the data - (convert to JSON)
+        serializer = SummaryStatSerializer(result_page, many=True)
+
+        return self.get_paginated_response(serializer.data)
+

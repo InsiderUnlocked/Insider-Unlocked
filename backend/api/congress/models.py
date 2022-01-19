@@ -1,8 +1,9 @@
 # Purpose: Initilze the table models for all our endpoints
 from django.db.models import signals
-from .signals import tradesCount
+from .signals import tradesCount, summaryStatUpdate
 from django.db import models
 from jsonfield import JSONField
+import datetime
 
 # Names of Congress
 class CongressPerson(models.Model):
@@ -116,3 +117,71 @@ class CongressTrade(models.Model):
 # Signals to update total transactions for each congress member
 signals.post_save.connect(tradesCount, sender=CongressTrade)
 signals.post_delete.connect(tradesCount, sender=CongressTrade)
+
+
+# Summary of all transactions 
+class SummaryStat(models.Model):
+    total = models.IntegerField(default=0)
+    purchases = models.IntegerField(default=0)
+    sales = models.IntegerField(default=0)
+    totalVolume = models.IntegerField(default=0)
+    timeframe = models.IntegerField(unique=True)
+    
+    def __str__(self):
+        return str(self.total)
+    
+
+    # Update congress persons transaction count every time the object is saved 
+    def updateStats(self):
+        transactions = CongressTrade.objects.filter(transactionDate__lte=datetime.datetime.today(), transactionDate__gt=datetime.datetime.today()-datetime.timedelta(days=self.timeframe))
+
+        # Get the number of transactions by congress person
+        total = transactions.count()
+
+        # # Trade Type Ratio
+        # self.purchases = transactions.filter(transactionType='Purchase').count()
+        # self.sales = transactions.filter(transactionType__startswith='Sale').count()
+
+
+        # Total Volume
+        listOfAmounts = {
+            "$1,001 - $15,000": (1001, 15000),
+            "$15,001 - $50,000": (15001, 50000),
+            "$50,001 - $100,000": (50001, 100000),
+            "$100,001 - $250,000": (100001, 250000),
+            "$250,001 - $500,000": (250001, 500000),
+            "$500,001 - $1,000,000": (500001, 1000000),
+            "$1,000,001 - $5,000,000": (1000001, 5000000),
+            "$5,000,001 - $25,000,000": (5000001, 25000000),
+            "$25,000,001 - $50,000,000": (25000001, 50000000),
+            "Over $50,000,000": (50000000, 50000000),
+        }
+        
+
+        sumMin = 0
+        sumMax = 0 
+
+        # iterate through the amount of each transaction 
+        # O(N) iteration on this loop through use of hashmap (Improved from previous O(N^2) iteration)))
+        for i in range(total):
+            # get the amount of the transaction using hashmap
+            sumMin += listOfAmounts[str(transactions[i].amount)][0]
+            sumMax += listOfAmounts[str(transactions[i].amount)][1]
+        
+        sumMid = (sumMax + sumMin) / 2
+
+        # update model
+        SummaryStat.objects.filter(id=self.id).update(
+            total=transactions.count(), 
+            purchases=transactions.filter(transactionType='Purchase').count(), 
+            sales=transactions.filter(transactionType__startswith='Sale').count(),
+            totalVolume=sumMid, 
+        )
+        
+    class Meta:
+        unique_together = ('total', 'purchases', 'sales', 'totalVolume', 'timeframe',)
+        # ordering = ["-transactionDate"]
+
+# Signals to update total transactions for each congress member
+signals.post_save.connect(summaryStatUpdate, sender=SummaryStat)
+signals.post_delete.connect(summaryStatUpdate, sender=SummaryStat)

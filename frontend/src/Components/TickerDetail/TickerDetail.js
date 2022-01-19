@@ -7,10 +7,15 @@ import FooterComponent from '../Footer/Footer';
 import Navbar from '../Navbar/Navbar'
 import TradingViewWidget from 'react-tradingview-widget';
 import { Themes } from 'react-tradingview-widget';
+
 import "./TickerDetail.css"
 import reqwest from 'reqwest';
 import {Row, Col, Card } from 'antd';
+import { Layout } from "antd";
+import { TitleSearch } from "../../Utils/Search/TitleSearch";
 
+// Initilze that our content is equal to the layout
+const { Content } = Layout;
 // Initilizing the columns of our table
 const columns = [
     {
@@ -39,7 +44,7 @@ const columns = [
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        render: text => <a style={{ textDecoration: "none" }} href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
+        render: text => <a style={{ textDecoration: "none" }} href={`https://insiderunlocked.web.app/congress-people/${text}`}>{text}</a>
     },
     {
         title: 'Source',
@@ -51,6 +56,8 @@ const columns = [
 
 // For pagination to work we need to get the user input, such as page size, and current page number
 const getURLParams = params => ({
+  // Set the name search
+  search: params.name,
   // Limit represents how much data per page
   limit: params.pagination.pageSize,
   // offset represents how much data is being ignored
@@ -69,6 +76,8 @@ class CongressTrades extends React.Component {
       // Current page size of the user's table
       pageSize: 20,
     },
+
+    name: "",
     // Initilzing a skeleton loader
     loading: false,
   };
@@ -83,15 +92,22 @@ class CongressTrades extends React.Component {
   }
 
   // function to basically keep track of the pagaination of the table and the interactions of the user with the table
-  handleTableChange = (pagination, filters, sorter) => {
+  handleTableChange = (pagination) => {
     this.fetch({
-      sortField: sorter.field,
-      sortOrder: sorter.order,
       pagination,
-      ...filters,
     });
   };
 
+  handleSearch = (name, pagination) => {
+    // Handles the search, takes the value of the user input
+    // make this input part of the request url
+    this.setState({ name });
+    // Fetch the data with the new ticker
+    this.fetch({
+      pagination,
+      name,
+    });
+  };
   fetch = (params = {}) => {
     this.setState({ loading: true });
     reqwest({
@@ -115,8 +131,11 @@ class CongressTrades extends React.Component {
   render() {
     const { data, pagination, loading } = this.state;
     return (
-      <div style={{backgroundColor: "black", position: "relative"}}>
-          <Navbar />
+      <Layout style={{ marginRight: 0, minHeight: 1100 }}>
+        {/* Rendering our navbar*/}
+        <Navbar />
+        {/* Initilzing our content */}
+        <Content>
           <div className = "headerSummaryDiv">
               <h1 className = "headerSummaryText">Summary for the last 30 days</h1>
             </div>
@@ -159,6 +178,20 @@ class CongressTrades extends React.Component {
 
             </div>
 
+          {/* Rendering our search component*/}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <TitleSearch
+              onSearch={this.handleSearch}
+              style={{ marginRight: 20 }}
+            />
+          </div>
+
             <Table
                 bordered
                 columns={columns}
@@ -170,8 +203,9 @@ class CongressTrades extends React.Component {
                 style={{ margin: 20, boxShadow: '1px 1px 1px 1px #ccc'}}
 
               />
-          <FooterComponent />
-      </div>
+        </Content>
+        <FooterComponent />
+      </Layout>
     );
   }
 }

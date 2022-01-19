@@ -11,3 +11,9 @@ def tradesCount(sender, instance, signal, *args, **kwargs):
     # Runs through all the congress people and updates their 
     for person in CongressPerson.objects.all():
         person.tradesCount()
+
+def summaryStatUpdate(sender, instance, signal, *args, **kwargs):
+    from .models import SummaryStat
+
+    for stat in SummaryStat.objects.all():
+        stat.updateStats()
