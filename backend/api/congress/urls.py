@@ -23,6 +23,13 @@ router.register(r'congress-person', views.CongressPersonViewSet, basename='congr
 # Returns the summary stats for congeress-trades endpoint 
 router.register(r'summary-stats', views.SummaryStatsViewSet, basename='summaryStats')
 
+# Returns the summary stats for Ticker endpoint 
+router.register(r'ticker-stats', views.TickerStatsViewSet, basename='tickerStats')
+
+# Returns the summary stats for Ticker endpoint 
+router.register(r'congress-stats', views.CongressStatsViewSet, basename='congressStats')
+
+
 # Wire up our API using automatic URL routing.
 urlpatterns = [
     path('government/', include(router.urls)),

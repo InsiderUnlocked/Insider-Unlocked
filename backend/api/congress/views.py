@@ -6,10 +6,8 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import filters
-from .serializers import CongressPersonSerializer, CongressTradeSerializer, SummaryStatSerializer
+from .serializers import CongressPersonSerializer, CongressTradeSerializer, SummaryStatSerializer, TickerSerializer
 from .models import CongressPerson, CongressTrade, Ticker, SummaryStat
-
-
 
 from django.db.models import Q
 import datetime
@@ -152,7 +150,7 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
 
         # Parse slug into first and last name
         firstName = congressPerson.split()[0]
-        lastName = congressPerson.split()[1]
+        lastName = congressPerson.split()[-1]
 
         # Get the id of the congress person passed into the URL 
         name = CongressPerson.objects.filter(firstName=firstName, lastName=lastName)[0]
@@ -175,9 +173,46 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
         return self.get_paginated_response(serializer.data)
 
 
+class TickerStatsViewSet(viewsets.ModelViewSet):
+# Permission needed to access endpoint
+    permission_classes = (permissions.AllowAny,)
+    # URL parameter passed into url that also exists in the CongressTrade and CongressPerson models 
+    lookup_field = 'ticker'
+    # Initiliazing our seializer class
+    serializer_class = TickerSerializer
+    
+    # filter by slug in url in django rest framework modelviewset
+    def get_queryset(self):
+        ticker = self.kwargs['ticker']
+
+        queryset = Ticker.objects.filter(ticker=ticker)
+
+        return queryset 
+
+class CongressStatsViewSet(viewsets.ModelViewSet):
+# Permission needed to access endpoint
+    permission_classes = (permissions.AllowAny,)
+    # URL parameter passed into url that also exists in the CongressTrade and CongressPerson models 
+    lookup_field = 'fullName'
+    # Initiliazing our seializer class
+    serializer_class = CongressPersonSerializer
+    
+    # filter by slug in url in django rest framework modelviewset
+    def get_queryset(self):
+        name = self.kwargs['fullName']
+
+        # Parse slug into first and last name
+        firstName = name.split()[0]
+        lastName = name.split()[1]
+
+        # Get the id of the congress person passed into the URL 
+        queryset = CongressPerson.objects.filter(firstName=firstName, lastName=lastName)
+
+        return queryset 
+
+
 # TODO: Summary Stats -- Still a Work in Progress
 # government/summary-stats endpoint
-from django.db.models import Count
 class SummaryStatsViewSet(viewsets.ModelViewSet):
     # Permission needed to access endpoint
     permission_classes = (permissions.AllowAny,)

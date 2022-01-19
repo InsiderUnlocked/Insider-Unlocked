@@ -2,7 +2,7 @@
 
 // Imports
 import React from "react";
-import { Table, Tag, Card, Col, Row, DatePicker, Space } from "antd";
+import { Table, Tag, Card, Col, Row } from "antd";
 import { Layout } from "antd";
 import FooterComponent from "../Footer/Footer";
 import Navbar from "../Navbar/Navbar";
@@ -36,14 +36,15 @@ const columns = [
   },
   {
     title: "Purchase/Sale",
-    key: "type",
-    dataIndex: "type",
+    key: "transactionType",
+    dataIndex: "transactionType",
     render: (type) => (
       <Tag
-        color={type === "Sale" || type === "S" ? "volcano" : "green"}
-        key={type === "S" || type === "Sale" ? "Sale" : "Purchase"}
+        // if type has sale in it then color it red
+        color={type.includes("Sale") ? "volcano" : "green"}
+        key={type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
       >
-        {type === "S" || type === "Sale" ? "Sale" : "Purchase"}
+        {type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
       </Tag>
     ),
   },
@@ -90,11 +91,15 @@ class CongressTrades extends React.Component {
     // Initilzing a skeleton loader
     loading: false,
     stats: {
-      volume: 0,
-      total: 0,
-      purchases: 0,
-      sales: 0,
-    }
+      // Intilize the total number of records
+      total: "lodaing...",
+      // Intilize the total volume
+      volume: "lodaing...",
+      // intilize the number of purchases
+      purchases: "lodaing...",
+      // intilize the number of sales
+      sales: "lodaing...",
+    },
   };
   // This function is called when this component is first mounted to DOM(meaning when its first visually represented)
   componentDidMount() {
@@ -176,8 +181,14 @@ class CongressTrades extends React.Component {
         <Content>
             {/* Rendering our Header Summary Text*/}
             <div className="headerSummaryDiv">
-              <h1 className="headerSummaryText">Summary for the last 30 days</h1>
+              <h1 className="headerSummaryText">Summary for the last 90 days</h1>
             </div>
+            {/* TO DO: ADD FILTERING FOR SUMMARY STATS */}
+            {/* <Dropdown overlay={menu}>
+              <Button>
+                Button <DownOutlined />
+              </Button>
+            </Dropdown> */}
 
           {/* Rendering our 3 Stats Cards*/}
           <div className="site-card-wrapper" style={{marginBottom: 20}}>

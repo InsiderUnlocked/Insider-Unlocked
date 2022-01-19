@@ -10,14 +10,15 @@ class TickerSerializer(serializers.ModelSerializer):
         # Database table
         model = Ticker
         # Fields to appear on the response
-        fields = ('ticker', 'company', 'market', 'sector', 'industry',)
+        fields = ('ticker', 'company', 'marketcap', 'sector', 'industry', 'totalTransactions', 'totalVolumeTransactions', 'purchases', 'sales',)
+        # fields = '__all__'
 
 class CongressPersonSerializer(serializers.ModelSerializer):
     class Meta:
         # Database table
         model = CongressPerson
         # Fields to appear on the response
-        fields = ('fullName', 'currentParty', 'currentChamber',  'currentState', 'image',)
+        fields = ('fullName', 'currentParty', 'currentChamber',  'currentState', 'image', 'totalTransactions', 'totalVolumeTransactions', 'purchases', 'sales',)
 
 class CongressTradeSerializer(serializers.ModelSerializer):
     # Gets ForignKey field to appear on the response, refer to ERD Diagram to get a better understanding of the connection between the models

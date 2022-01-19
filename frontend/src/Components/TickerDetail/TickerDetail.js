@@ -35,10 +35,18 @@ const columns = [
       key: 'amount',
     },
     {
-      title: 'Purchase/Sale',
-      key: 'type',
-      dataIndex: 'type',
-      render: type => <Tag color={type === 'Sale' || type === 'S' ? 'volcano' : 'green'} key={type === 'S' || type === 'Sale' ? 'Sale' : 'Purchase'}>{type === 'S' || type === 'Sale' ? 'Sale' : 'Purchase'}</Tag>,
+      title: "Purchase/Sale",
+      key: "transactionType",
+      dataIndex: "transactionType",
+      render: (type) => (
+        <Tag
+          // if type has sale in it then color it red
+          color={type.includes("Sale") ? "volcano" : "green"}
+          key={type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
+        >
+          {type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
+        </Tag>
+      ),
     },
     {
         title: 'Name',
@@ -84,13 +92,13 @@ class CongressTrades extends React.Component {
     // Intilize Stats variables
     stats: {
       // Intilize the total number of records
-      total: 0,
+      total: "lodaing...",
       // Intilize the total volume
-      volume: 0,
+      volume: "lodaing...",
       // intilize the number of purchases
-      purchases: 0,
+      purchases: "lodaing...",
       // intilize the number of sales
-      sales: 0,
+      sales: "lodaing...",
     },
   };
 
@@ -142,18 +150,19 @@ class CongressTrades extends React.Component {
       });
     }).then(() => {
       reqwest({
-        url: `http://127.0.0.1:8000/government/summary-stats/90/?format=json`,
+        url: `http://127.0.0.1:8000/government/ticker-stats/${this.props.match.params.slug}/?format=json`,
         method: "get",
         type: "json",
         // Upon the requeset validiating
       }).then((response) => {
+        console.log(response)
         this.setState({
           stats: {
             // Assign the stats variables
-            volume: response.results[0].totalVolume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-            total: response.results[0].total,
-            purchases: response.results[0].purchases,
-            sales: response.results[0].sales,
+            volume: response.totalVolumeTransactions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            total: response.totalTransactions,
+            purchases: response.purchases,
+            sales: response.sales,
           },
         });
       })
