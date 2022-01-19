@@ -1,7 +1,7 @@
 // Purpose: Build out our main page which is the trades of the congress
 
 // Imports
-import React, { useState } from "react";
+import React from "react";
 import { Table, Tag, Card, Col, Row, DatePicker, Space } from "antd";
 import { Layout } from "antd";
 import FooterComponent from "../Footer/Footer";
@@ -10,7 +10,8 @@ import reqwest from "reqwest";
 import "./CongressTrades.css";
 import { TitleSearch } from "../../Utils/Search/TitleSearch";
 
-
+// Initilze that our content is equal to the layout
+const { Content } = Layout;
 
 // Initilze our columns
 const columns = [
@@ -18,14 +19,14 @@ const columns = [
     title: "Transaction Date",
     dataIndex: "transactionDate",
     key: "transactionDate",
-    sorter: (a, b) => new Date(a.transactionDate) - new Date(b.transactionDate)
+    // render: text => <a>{text}</a>,
   },
   {
     title: "Ticker",
     dataIndex: "ticker",
     key: "ticker",
     render: (text) => (
-      <a href={`https://insiderunlocked.web.app/ticker/${text}`}>{text}</a>
+      <a href={`http://localhost:3000/ticker/${text}`}>{text}</a>
     ),
   },
   {
@@ -51,7 +52,7 @@ const columns = [
     dataIndex: "name",
     key: "name",
     render: (text) => (
-      <a href={`https://insiderunlocked.web.app/congress-people/${text}`}>{text}</a>
+      <a href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
     ),
   },
   {
@@ -72,12 +73,6 @@ const getURLParams = (params) => ({
   offset: (params.pagination.current - 1) * params.pagination.pageSize,
 });
 
-
-// Initilze that our content is equal to the layout
-const { Content } = Layout;
-// const [totalTradeVolume, setTotalTradeVolumer] = useState([]);
-// const [purchaseSaleRatio, setPurchaseSaleRatio] = React.useState({0: 0});
-
 class CongressTrades extends React.Component {
   // Static variables that we will fetch later on
   state = {
@@ -90,17 +85,16 @@ class CongressTrades extends React.Component {
       // Current page size of the user's table
       pageSize: 20,
     },
-
+    // Keeps track of the user's search
     ticker: "",
     // Initilzing a skeleton loader
     loading: false,
-    
+
     totalTradeVolume: 0,
-    purchases: 0,
-    sales: 0,
     totalTransactions: 0,
+    totalPurchases: 0,
+    totalSales: 0,
   };
-  
   // This function is called when this component is first mounted to DOM(meaning when its first visually represented)
   componentDidMount() {
     // We assign the pagination variable what we initilzed earlier in the state variable
@@ -115,7 +109,7 @@ class CongressTrades extends React.Component {
       pagination,
     });
   };
-  
+
   handleSearch = (ticker, pagination) => {
     
     this.setState({ ticker });
@@ -124,22 +118,19 @@ class CongressTrades extends React.Component {
       ticker,
     });
   };
-
-
   // Request the info from the backend
   fetch = (params = {}) => {
     // Set the skeleton loader to true while we are making the request
     this.setState({ loading: true });
     reqwest({
-      url: "http://localhost:8000/government/summary-stats/90/?format=json",
+      url: "http://127.0.0.1:8000/government/congress-trades/?format=json",
       method: "get",
       type: "json",
       // Get the user params to validate the pagination for the request URL
       data: getURLParams(params),
       // Upon the requeset validiating
     }).then((data) => {
-      console.log("hello 2nd");
-      console.log(data);
+      console.log(data.results)
       // Assign variables respectively
       this.setState({
         // Set skeleton loader to false as data is loaded
@@ -151,27 +142,27 @@ class CongressTrades extends React.Component {
           ...params.pagination,
           total: data.count - params.pagination.pageSize,
         },
-        totalTradeVolume: data.results[0].totalVolume,
-        purchases: data.results[0].purchases,
-        sales: data.results[0].sales,
+
+        // convert total trade volume to dollars with commas with regex
+        totalTradeVolume: data.results[0].totalVolume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
         totalTransactions: data.results[0].total,
+        totalPurchases: data.results[0].purchases,
+        totalSales: data.results[0].sales,
       });
     });
   };
 
-  
-
   render() {
-    const { data, pagination, loading, totalTradeVolume, purchases, sales, totalTransactions } = this.state;
+    const { data, pagination, loading, totalPurchases, totalSales, totalTradeVolume, totalTransactions } = this.state;
     return (
-      <Layout style={{ marginRight: 0, minHeight: 1100 }}>
+      <Layout style={{ marginRight: 0, minHeight: 1100}}>
         {/* Rendering our navbar*/}
         <Navbar />
         {/* Initilzing our content */}
         <Content>
             {/* Rendering our Header Summary Text*/}
             <div className="headerSummaryDiv">
-              <h1 className="headerSummaryText">Summary for the last 90 days</h1>
+              <h1 className="headerSummaryText">Summary for the last 30 days</h1>
             </div>
 
           {/* Rendering our 3 Stats Cards*/}
@@ -185,14 +176,14 @@ class CongressTrades extends React.Component {
               </Col>
               <Col xs={24} xl={8}>
                 <Card hoverable title="Total Trade Volume" className = "smooth-card">
-                  <h1 style={{ fontSize: '30px' }}>{totalTradeVolume}</h1>
+                  <h1 style={{ fontSize: '30px' }}>${totalTradeVolume}</h1>
 
                   <p style={{ bottom: 0, margin: 0 }}>Combined Volume of Asset Sales + Purchases</p>
                 </Card>
               </Col>
               <Col xs={24} xl={8}>
                 <Card hoverable title="Trade Type Ratio" className = "smooth-card">
-                  <h1 style={{ fontSize: '30px' }}><font color='green'>{purchases}</font>/<font color='red'>{sales}</font></h1>
+                  <h1 style={{ fontSize: '30px' }}><font color='green'>{totalPurchases}</font>/<font color='red'>{totalSales}</font></h1>
 
                   <p style={{ bottom: 0, margin: 0 }}>Purchases Trades / Sales Trades</p>
                 </Card>

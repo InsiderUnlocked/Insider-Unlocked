@@ -13,7 +13,11 @@ def tradesCount(sender, instance, signal, *args, **kwargs):
         person.tradesCount()
 
 def summaryStatUpdate(sender, instance, signal, *args, **kwargs):
-    from .models import SummaryStat
+    instance.updateStats()
 
-    for stat in SummaryStat.objects.all():
-        stat.updateStats()
+def tickerStatUpdate(sender, instance, signal, *args, **kwargs):
+    instance.updateStats()
+
+def congressPersonStatUpdate(sender, instance, signal, *args, **kwargs):
+    instance.updateStats()
+
