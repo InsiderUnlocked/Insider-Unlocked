@@ -17,4 +17,6 @@ regex==2021.7.6
 requests==2.25.1
 yfinance==0.1.67
 django-admin-honeypot
-django-otp
+django-otp==1.0.6
+APScheduler==3.0.0
+django-apscheduler==0.6.0

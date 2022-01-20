@@ -17,12 +17,15 @@ from .scripts.congressPeople import main as updateCongressPersonMain
 from .populate import historical as populate
 from .populate import current as currentPopulate
 
-class TempDBUpdatesViewSet(viewsets.ModelViewSet):
+def updateDB(): 
+    time = datetime.datetime.now()
+    print('hello world:[{}]'.format(time))
+    
     # Add/Update CongressPerson Table (Get all members)
     # try:
     # updateCongressPersonMain()
-    # # except:
-    # #     pass
+    # except:
+    #     pass
 
     # populate()
     # currentPopulate()
@@ -83,9 +86,14 @@ class TickerViewSet(viewsets.ModelViewSet):
         # Query Database for the ticker id  
         ticker = Ticker.objects.get(ticker=self.kwargs['ticker'])
         keywords = self.request.query_params.get('search')
+        transactionType = self.request.query_params.get('transactionType')
 
-        if keywords is not None:
-            queryset = CongressTrade.objects.filter(ticker=ticker, name__fullName__contains=keywords).order_by('-transactionDate')        
+        if keywords is not None or transactionType is not None:
+            if keywords is None:
+                queryset = CongressTrade.objects.filter(ticker=ticker, transactionType=transactionType).order_by('-transactionDate')        
+            else:
+                queryset = CongressTrade.objects.filter(ticker=ticker, name__fullName__contains=keywords).order_by('-transactionDate')        
+            print(queryset)
         else:
             # Use the ticker id to filter all transactions which contain that ticker id
             queryset = CongressTrade.objects.filter(ticker=ticker).order_by('-transactionDate')        

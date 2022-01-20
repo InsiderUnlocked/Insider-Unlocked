@@ -106,7 +106,8 @@ def updateDB(data):
         if type(assetDescription) == list:
             # Check for Rates/Matures, and Options details
             if "Rates/Matures" in assetDescription[1][0].lower() or "put" in assetDescription[1][0].lower() or "call" in assetDescription[1][0].lower():
-                assetDetails = assetDescription[1][0]
+                # assetDetails = assetDescription[1][0]
+                assetDetails = " ".join(assetDescription[1])
             
             else:
                 assetDetails = None
@@ -139,7 +140,7 @@ def updateDB(data):
             print("ERROR: " + str(name))
             continue
 
-        # print("Done one")
+        print("Done one")
 
 def historical():
     # Load historical data  
@@ -148,6 +149,10 @@ def historical():
 
 def current():
     # use senators script to get current data  
+    # get todays date and format to month/day/year
+    today = datetime.datetime.today().strftime('%m-%d-%Y')
+
+    data = getSenatorData(today)
     data = getSenatorData("12/24/2021")
 
     updateDB(data)
