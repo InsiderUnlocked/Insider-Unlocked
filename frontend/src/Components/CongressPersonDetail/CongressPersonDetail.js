@@ -3,13 +3,14 @@
 // Imports
 import React from "react";
 import { Card, Table, Tag, Avatar } from "antd";
-import { Layout, Col, Row, DatePicker } from "antd";
+import { Layout, Col, Row, Button, Menu, Dropdown } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import FooterComponent from "../Footer/Footer";
 import Navbar from "../Navbar/Navbar";
 import { TitleSearch } from "../../Utils/Search/TitleSearch";
 import reqwest from "reqwest";
 import "./CongressPersonDetail.css";
+import { DownOutlined, DollarOutlined } from "@ant-design/icons";
 
 // Initilze that our content is equal to the layout
 const { Content } = Layout;
@@ -42,9 +43,9 @@ const columns = [
       <Tag
         // if type has sale in it then color it red
         color={type.includes("Sale") ? "volcano" : "green"}
-        key={type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
+        key={type.includes("Full") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
       >
-        {type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
+        {type.includes("Full") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
       </Tag>
     ),
   },
@@ -73,6 +74,8 @@ const getURLParams = (params) => ({
   offset: (params.pagination.current - 1) * params.pagination.pageSize,
   // Set the name search
   ticker: params.ticker,
+  // Keeps track of the transaction type filtering
+  transactionType: params.transactionType,
 });
 
 class CongressTrades extends React.Component {
@@ -106,6 +109,7 @@ class CongressTrades extends React.Component {
 
       image: "",
     },
+    transactionType: "",
   };
   // This function is called when this component is first mounted to DOM(meaning when its first visually represented)
   componentDidMount() {
@@ -119,17 +123,28 @@ class CongressTrades extends React.Component {
     // Fetch the pagination variable to validate the pagination request of the user
     this.fetch({
       pagination,
+      ticker: this.state.ticker
     });
   };
 
-  handleSearch = (ticker, pagination) => {
+  handleSearch = (ticker) => {
     // Handles the search, takes the value of the user input
-    // make this input part of the request url
     this.setState({ ticker });
     // Fetch the data with the new ticker
     this.fetch({
-      pagination,
+      pagination: this.state.pagination,
       ticker,
+    });
+  };
+
+  handleTransactionTypeFilter = (filterInput) => {
+    this.setState({
+      transactionType: filterInput.key,
+    })
+    this.fetch({
+      pagination: this.state.pagination,
+      ticker: this.state.ticker,
+      transactionType: filterInput.key,
     });
   };
   // Request the info from the backend
@@ -255,8 +270,8 @@ class CongressTrades extends React.Component {
               </Col>
             </Row>
           </div>
-          {/* Rendering our search component*/}
-          <div
+          {/* Rendering our search and filter component*/}
+          <Row
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -264,14 +279,35 @@ class CongressTrades extends React.Component {
             }}
           >
             <TitleSearch
+              
               onSearch={this.handleSearch}
               style={{ marginRight: 20 }}
             />
-          </div>
+              <Dropdown overlay={    
+                <Menu onClick={this.handleTransactionTypeFilter}>
+                  <Menu.Item key="Purchase" icon={<DollarOutlined />}>
+                    Purchases
+                  </Menu.Item>
+                  <Menu.Item key="Sale (Full)" icon={<DollarOutlined />}>
+                    Full Sales
+                  </Menu.Item>
+                  <Menu.Item key="Sale (Partial)" icon={<DollarOutlined />}>
+                    Partial Sales
+                  </Menu.Item>
+                  <Menu.Item key="Sale" icon={<DollarOutlined />}>
+                    All Sales
+                  </Menu.Item>
+                </Menu>
+              }>
+              <div style={{marginRight: 20 }} >
+                <Button>
+                  Filter Transaction Type <DownOutlined />
+                </Button>
+              </div>
+            </Dropdown>
+          </Row>
           {/* Rendering our table */}
           <Table
-            // Make columns and rows bordered
-            bordered
             // Assign columns
             columns={columns}
             // Assign data

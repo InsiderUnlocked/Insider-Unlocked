@@ -21,7 +21,7 @@ const columns = [
       dataIndex: 'fullName',
       key: 'fullName',
       // remove dots from the name
-      render: text => <a href={`https://insiderunlocked.web.app/congress-people/${text.replace(/\./g, " ")}`}>{text}</a>
+      render: text => <a href={`http://localhost:3000/congress-people/${text.replace(/\./g, " ")}`}>{text}</a>
     },
     {
       title: 'Party',
@@ -54,6 +54,7 @@ const getURLParams = (params) => ({
   limit: params.pagination.pageSize,
   // offset represents how much data is being ignored
   offset: (params.pagination.current - 1) * params.pagination.pageSize,
+  
 });
 
 class CongressTrades extends React.Component {
@@ -85,16 +86,16 @@ class CongressTrades extends React.Component {
     // Fetch the pagination variable to validate the pagination request of the user
     this.fetch({
       pagination,
+      name: this.state.name,
     });
   };
 
-  handleSearch = (name, pagination) => {
+  handleSearch = (name) => {
     // Handles the search, takes the value of the user input
-    // make this input part of the request url
     this.setState({ name });
     // Fetch the data with the new ticker
     this.fetch({
-      pagination,
+      pagination: this.state.pagination,
       name,
     });
   };
@@ -128,7 +129,7 @@ class CongressTrades extends React.Component {
   render() {
     const { data, pagination, loading } = this.state;
     return (
-        <Layout style={{ marginRight: 0, minHeight: 1100}}>
+        <Layout style={{ minHeight: 1100}}>
           {/* Rendering our navbar*/}
           <Navbar />
           {/* Initilzing our content */}
@@ -136,15 +137,15 @@ class CongressTrades extends React.Component {
 
            {/* Rendering our Header Summary Text*/}
            <div className="headerSummaryDiv">
-            <h1 className="headerSummaryText">All of congress</h1>
+            <h1 className="headerSummaryText">All of senate</h1>
           </div>
           {/* create a grid of cards */}
-          <Row gutter={[24, 24]} style={{ margin: 10 }}>
+          <Row gutter={[24, 24]} style={{ margin: 10}}>
             {/* Loop through the data and render the cards */}
             {data.map((item) => (
               <Col xs={24} xl={6} key={item.id}>
                 {/* add link to card */}
-                <a href={`https://insiderunlocked.web.app/congress-people/${item.fullName.replace(/\./g, " ")}`}>
+                <a href={`http://localhost:3000/congress-people/${item.fullName.replace(/\./g, " ")}`}>
                 <Card
                   hoverable
                   style={{ width: 450 }}

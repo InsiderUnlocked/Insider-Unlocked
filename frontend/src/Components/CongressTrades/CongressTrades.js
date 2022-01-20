@@ -2,14 +2,15 @@
 
 // Imports
 import React from "react";
-import { Table, Tag, Card, Col, Row } from "antd";
+import { Table, Tag, Card, Col, Row, Dropdown, Button, message } from "antd";
 import { Layout } from "antd";
 import FooterComponent from "../Footer/Footer";
 import Navbar from "../Navbar/Navbar";
 import reqwest from "reqwest";
 import "./CongressTrades.css";
 import { TitleSearch } from "../../Utils/Search/TitleSearch";
-
+import { Menu} from "antd";
+import { DownOutlined, SlidersOutlined, DollarOutlined } from "@ant-design/icons";
 // Initilze that our content is equal to the layout
 const { Content } = Layout;
 
@@ -35,16 +36,16 @@ const columns = [
     key: "amount",
   },
   {
-    title: "Purchase/Sale",
+    title: "Transaction Type",
     key: "transactionType",
     dataIndex: "transactionType",
     render: (type) => (
       <Tag
         // if type has sale in it then color it red
         color={type.includes("Sale") ? "volcano" : "green"}
-        key={type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
+        key={type.includes("Full") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
       >
-        {type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
+        {type.includes("Full") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
       </Tag>
     ),
   },
@@ -64,6 +65,7 @@ const columns = [
   },
 ];
 
+
 // For pagination to work we need to get the user input, such as page size, and current page number this is what the function does
 const getURLParams = (params) => ({
   // Set the ticker search
@@ -72,6 +74,8 @@ const getURLParams = (params) => ({
   limit: params.pagination.pageSize,
   // offset represents how much data is being ignored
   offset: (params.pagination.current - 1) * params.pagination.pageSize,
+  // Keeps track of the transaction type filtering
+  transactionType: params.transactionType,
 });
 
 class CongressTrades extends React.Component {
@@ -100,7 +104,13 @@ class CongressTrades extends React.Component {
       // intilize the number of sales
       sales: "lodaing...",
     },
+    // summary stats request variable
+    summary: "90",
+    // Keeps track of the transaction type
+    transactionType: "",
   };
+  // define a variable
+
   // This function is called when this component is first mounted to DOM(meaning when its first visually represented)
   componentDidMount() {
     // We assign the pagination variable what we initilzed earlier in the state variable
@@ -113,17 +123,52 @@ class CongressTrades extends React.Component {
     // Fetch the pagination variable to validate the pagination request of the user
     this.fetch({
       pagination,
+      ticker: this.state.ticker,
+      transactionType: this.state.transactionType,
+      summary: this.state.summary,
     });
+
   };
 
-  handleSearch = (ticker, pagination) => {
+  handleSearch = (ticker) => {
     
     this.setState({ ticker });
     this.fetch({
-      pagination,
+      pagination: this.state.pagination,
       ticker,
+      transactionType: this.state.transactionType,
+      summary: this.state.summary,
     });
   };
+
+  handleTransactionTypeFilter = (filterInput) => {
+    this.setState({
+      transactionType: filterInput.key,
+    })
+    this.fetch({
+      pagination: this.state.pagination,
+      ticker: this.state.ticker,
+      transactionType: filterInput.key,
+      summary: this.state.summary,
+    });
+  };
+
+  // function to handle menu click and change the summary variable to the value of the menu item
+  handleSummaryMenuClick = (e) => {
+    this.setState({
+      summary: e.key,
+    });
+
+    // make it fetch the data with the new summary variable
+    this.fetch({
+      pagination: this.state.pagination,
+      ticker: this.state.ticker,
+      transactionType: this.state.transactionType,
+      summary: e.key,
+    });
+  };
+
+
   // Request the info from the backend
   fetch = (params = {}) => {
     // Set the skeleton loader to true while we are making the request
@@ -152,7 +197,7 @@ class CongressTrades extends React.Component {
       });
     }).then(() => {
       reqwest({
-        url: `http://127.0.0.1:8000/government/summary-stats/90/?format=json`,
+        url: `http://127.0.0.1:8000/government/summary-stats/${this.state.summary}/?format=json`,
         method: "get",
         type: "json",
         // Upon the requeset validiating
@@ -172,7 +217,7 @@ class CongressTrades extends React.Component {
   };
 
   render() {
-    const { data, pagination, loading, stats } = this.state;
+    const { data, pagination, loading, stats, summary } = this.state;
     return (
       <Layout style={{ marginRight: 0, minHeight: 1100}}>
         {/* Rendering our navbar*/}
@@ -180,15 +225,31 @@ class CongressTrades extends React.Component {
         {/* Initilzing our content */}
         <Content>
             {/* Rendering our Header Summary Text*/}
-            <div className="headerSummaryDiv">
-              <h1 className="headerSummaryText">Summary for the last 90 days</h1>
-            </div>
-            {/* TO DO: ADD FILTERING FOR SUMMARY STATS */}
-            {/* <Dropdown overlay={menu}>
-              <Button>
-                Button <DownOutlined />
-              </Button>
-            </Dropdown> */}
+            <Row className="headerSummaryDiv">
+              <h1 className="headerSummaryText">Summary for the last {summary} days</h1>
+              <Dropdown className= "Dropdown" overlay={    
+                <Menu onClick={this.handleSummaryMenuClick}>
+                  <Menu.Item key="30" icon={<SlidersOutlined />}>
+                    Last 30 Days
+                  </Menu.Item>
+                  <Menu.Item key="60" icon={<SlidersOutlined />}>
+                    Last 60 Days
+                  </Menu.Item>
+                  <Menu.Item key="90" icon={<SlidersOutlined />}>
+                    Last 90 Days
+                  </Menu.Item>
+                  <Menu.Item key="120" icon={<SlidersOutlined />}>
+                    Last 120 Days
+                  </Menu.Item>
+                </Menu>
+              }>
+              <div style={{marginTop: 3}}>
+                <Button>
+                  Filter Summary Stats <DownOutlined />
+                </Button>
+              </div>
+            </Dropdown>
+            </Row>
 
           {/* Rendering our 3 Stats Cards*/}
           <div className="site-card-wrapper" style={{marginBottom: 20}}>
@@ -216,8 +277,8 @@ class CongressTrades extends React.Component {
             </Row>
           </div>
 
-          {/* Rendering our search component*/}
-          <div
+          {/* Rendering our search and filter components*/}
+          <Row
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -229,12 +290,29 @@ class CongressTrades extends React.Component {
               onSearch={this.handleSearch}
               style={{ marginRight: 20 }}
             />
-          </div>
+              <Dropdown overlay={    
+                <Menu onClick={this.handleTransactionTypeFilter}>
+                  <Menu.Item key="Purchase" icon={<DollarOutlined />}>
+                    Purchases
+                  </Menu.Item>
+                  <Menu.Item key="Sale (Full)" icon={<DollarOutlined />}>
+                    Full Sales
+                  </Menu.Item>
+                  <Menu.Item key="Sale (Partial)" icon={<DollarOutlined />}>
+                    Partial Sales
+                  </Menu.Item>
+                </Menu>
+              }>
+              <div style={{marginRight: 20 }} >
+                <Button>
+                  Filter Transaction Type <DownOutlined />
+                </Button>
+              </div>
+            </Dropdown>
+          </Row>
 
           {/* Rendering our table */}
           <Table
-            // Make columns and rows bordered
-            bordered
             // Assign columns
             columns={columns}
             // Assign data

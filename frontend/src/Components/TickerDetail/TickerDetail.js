@@ -40,19 +40,19 @@ const columns = [
       dataIndex: "transactionType",
       render: (type) => (
         <Tag
-          // if type has sale in it then color it red
-          color={type.includes("Sale") ? "volcano" : "green"}
-          key={type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
-        >
-          {type.includes("Sale") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
-        </Tag>
+        // if type has sale in it then color it red
+        color={type.includes("Sale") ? "volcano" : "green"}
+        key={type.includes("Full") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
+      >
+        {type.includes("Full") ? "Sale" : type.includes("Partial") ? "Partial Sale" : "Purchase"}
+      </Tag>
       ),
     },
     {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        render: text => <a style={{ textDecoration: "none" }} href={`https://insiderunlocked.web.app/congress-people/${text}`}>{text}</a>
+        render: text => <a style={{ textDecoration: "none" }} href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
     },
     {
         title: 'Source',
@@ -113,18 +113,20 @@ class CongressTrades extends React.Component {
 
   // function to basically keep track of the pagaination of the table and the interactions of the user with the table
   handleTableChange = (pagination) => {
+
     this.fetch({
       pagination,
+      name: this.state.name,
     });
   };
 
-  handleSearch = (name, pagination) => {
+  handleSearch = (name) => {
     // Handles the search, takes the value of the user input
     // make this input part of the request url
     this.setState({ name });
     // Fetch the data with the new ticker
     this.fetch({
-      pagination,
+      pagination: this.state.pagination,
       name,
     });
   };
@@ -236,7 +238,6 @@ class CongressTrades extends React.Component {
           </div>
 
             <Table
-                bordered
                 columns={columns}
                 dataSource={data}
                 pagination={pagination}

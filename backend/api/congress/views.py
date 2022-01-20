@@ -152,6 +152,7 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
         # Get the name that was passed in the URL
         congressPerson = self.kwargs['name']
         ticker = self.request.query_params.get('ticker')
+        transactionType = self.request.query_params.get('transactionType')
 
         # Parse slug into first and last name
         firstName = congressPerson.split()[0]
@@ -166,7 +167,9 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
         if ticker is not None:
             queryset = queryset.filter(ticker__ticker__icontains=ticker)
          
-            print(queryset)
+        if transactionType is not None:
+            queryset = queryset.filter(transactionType__icontains=transactionType)
+
 
         return queryset
 

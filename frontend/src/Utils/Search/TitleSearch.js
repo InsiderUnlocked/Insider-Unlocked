@@ -9,7 +9,7 @@ const Search = Input.Search;
 export const TitleSearch = ({ onSearch, ...props }) => (
   <div {...props}>
     <Search
-      placeholder="Enter Ticker"
+      placeholder="Search"
       onSearch={onSearch}
       style={{ width: 200, marginLeft: 20}}
     />
