@@ -9,7 +9,7 @@ Insider Unlocked is an ongoing web application we have been co-developing for th
       Website
     </a>
     <span> | </span>
-    <a href="https://github.com/InsiderUnlocked/Insider-Unlocked/tree/main/Data%20Science">
+    <a href="https://github.com/InsiderUnlocked/Insider-Unlocked/blob/main/Data%20Science/notebook.ipynb">
       Data Analysis
     </a>
     <span> | </span>

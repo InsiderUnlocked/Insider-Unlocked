@@ -52,7 +52,7 @@ const columns = [
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        render: text => <a style={{ textDecoration: "none" }} href={`http://localhost:3000/congress-people/${text}`}>{text}</a>
+        render: text => <a style={{ textDecoration: "none" }} href={`http://localhost:3000/Senator/${text}`}>{text}</a>
     },
     {
         title: 'Source',
@@ -182,10 +182,9 @@ class CongressTrades extends React.Component {
         {/* Initilzing our content */}
         <Content>
           <div className = "headerSummaryDiv">
-              <h1 className = "headerSummaryText">Summary for the last 30 days</h1>
+              <h1 className = "headerSummaryText">Summary stats of ticker: {this.props.match.params.slug}</h1>
             </div>
-
-              {/* Stats*/}
+            {/* Stats*/}
             <div className="site-card-wrapper" style={{marginBottom: 20}}>
             <Row gutter={[16, 16]} style={{ margin: 10 }}>
               <Col xs={24} xl={8}>

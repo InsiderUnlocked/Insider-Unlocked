@@ -15,6 +15,7 @@ import { DownOutlined, DollarOutlined } from "@ant-design/icons";
 // Initilze that our content is equal to the layout
 const { Content } = Layout;
 
+const { Meta } = Card;
 // Initilze our columns
 const columns = [
   {
@@ -109,6 +110,12 @@ class CongressTrades extends React.Component {
 
       image: "",
     },
+    personDetail: {
+      currentChamber: "",
+      currentParty: "",
+      currentState: "",
+    },
+
     transactionType: "",
   };
   // This function is called when this component is first mounted to DOM(meaning when its first visually represented)
@@ -181,7 +188,6 @@ class CongressTrades extends React.Component {
         type: "json",
         // Upon the requeset validiating
       }).then((response) => {
-        console.log("hello")
         console.log(response)
         this.setState({
           stats: {
@@ -192,6 +198,11 @@ class CongressTrades extends React.Component {
             sales: response.results[0].sales,
             image: response.results[0].image,
           },
+          personDetail: {
+            currentChamber: response.results[0].currentChamber,
+            currentParty: response.results[0].currentParty,
+            currentState: response.results[0].currentState,
+          },
         });
       })
       
@@ -199,7 +210,7 @@ class CongressTrades extends React.Component {
   };
 
   render() {
-    const { data, pagination, loading, stats } = this.state;
+    const { data, pagination, loading, stats, personDetail } = this.state;
     return (
       <Layout style={{ marginRight: 0, minHeight: 1100}}>
         {/* Rendering our navbar*/}
@@ -217,7 +228,7 @@ class CongressTrades extends React.Component {
           >
             <Card
               hoverable
-              title={this.props.match.params.slug}
+              title={this.props.match.params.slug + ": " + personDetail.currentParty+ ', ' + personDetail.currentChamber + ', ' + personDetail.currentState}
               className = "smooth-card"
             >
               <Avatar size={125} icon={<UserOutlined />} src={stats.image} />

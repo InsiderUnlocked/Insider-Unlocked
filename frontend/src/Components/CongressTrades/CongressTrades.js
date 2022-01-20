@@ -54,7 +54,7 @@ const columns = [
     dataIndex: "name",
     key: "name",
     render: (text) => (
-      <a href={`http://localhost:3000/congress-people/${text.replace(/\./g, " ")}`}>{text}</a>
+      <a href={`http://localhost:3000/Senator/${text.replace(/\./g, " ")}`}>{text}</a>
     ),
   },
   {
@@ -292,6 +292,9 @@ class CongressTrades extends React.Component {
             />
               <Dropdown overlay={    
                 <Menu onClick={this.handleTransactionTypeFilter}>
+                  <Menu.Item key="" icon={<DollarOutlined />}>
+                    All Transactions
+                  </Menu.Item>
                   <Menu.Item key="Purchase" icon={<DollarOutlined />}>
                     Purchases
                   </Menu.Item>
@@ -303,7 +306,7 @@ class CongressTrades extends React.Component {
                   </Menu.Item>
                 </Menu>
               }>
-              <div style={{marginRight: 20 }} >
+              <div style={{marginRight: 20, marginLeft: 20 }} >
                 <Button>
                   Filter Transaction Type <DownOutlined />
                 </Button>

@@ -142,10 +142,6 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
     # Initiliazing our seializer class
     serializer_class = CongressTradeSerializer
 
-    # Adding Logic to filter the data
-    # filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    # filterset_fields = ['ticker']
-    # search_fields = ['ticker']
         
     # filter by slug in url in django rest framework modelviewset
     def get_queryset(self):

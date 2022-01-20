@@ -20,8 +20,8 @@ function App() {
                     <Route exact path="/Senate-Trades" component={CongressTrades} />
                     <Route exact path="/Senate-People" component={CongressPeople}/>
 
-                    <Route exact path="/ticker/:slug" component={TickerDetail}/>
-                    <Route exact path="/congress-people/:slug" component={CongressPersonDetail}/>
+                    <Route exact path="/Ticker/:slug" component={TickerDetail}/>
+                    <Route exact path="/Senator/:slug" component={CongressPersonDetail}/>
                     <Redirect to="/404" />
                 </Switch>
             </div>

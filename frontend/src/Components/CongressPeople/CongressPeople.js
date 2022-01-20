@@ -21,7 +21,7 @@ const columns = [
       dataIndex: 'fullName',
       key: 'fullName',
       // remove dots from the name
-      render: text => <a href={`http://localhost:3000/congress-people/${text.replace(/\./g, " ")}`}>{text}</a>
+      render: text => <a href={`http://localhost:3000/Senator/${text.replace(/\./g, " ")}`}>{text}</a>
     },
     {
       title: 'Party',
@@ -145,10 +145,9 @@ class CongressTrades extends React.Component {
             {data.map((item) => (
               <Col xs={24} xl={6} key={item.id}>
                 {/* add link to card */}
-                <a href={`http://localhost:3000/congress-people/${item.fullName.replace(/\./g, " ")}`}>
+                <a href={`http://localhost:3000/Senator/${item.fullName.replace(/\./g, " ")}`}>
                 <Card
                   hoverable
-                  style={{ width: 450 }}
                   className='smooth-card'
                 >
                 <Meta
