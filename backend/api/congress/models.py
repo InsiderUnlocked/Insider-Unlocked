@@ -34,14 +34,14 @@ class CongressPerson(models.Model):
     termsServed = models.JSONField(default=None, blank=True, null=True)
     
     # total transactions
-    totalTransactions = models.IntegerField(default=0)
+    totalTransactions = models.BigIntegerField(default=0)
 
     # Total Volume of transactions
-    totalVolumeTransactions = models.IntegerField(blank=True, null=True, default=0)
+    totalVolumeTransactions = models.BigIntegerField(blank=True, null=True, default=0)
 
     # Trade Type Ratio
-    purchases = models.IntegerField(blank=True, null=True, default=0)
-    sales = models.IntegerField(blank=True, null=True, default=0)
+    purchases = models.BigIntegerField(blank=True, null=True, default=0)
+    sales = models.BigIntegerField(blank=True, null=True, default=0)
 
     def __str__(self):
         return self.fullName
@@ -108,23 +108,22 @@ class Ticker(models.Model):
     company = models.CharField(max_length=1000)
 
     # marketcap 
-    marketcap = models.IntegerField(blank=True, null=True)
+    marketcap = models.BigIntegerField(blank=True, null=True)
     # sector
     sector = models.CharField(max_length=1000)
     # industry
     industry = models.CharField(max_length=1000)
 
-
     # Signals to update total transactions for each congress member
     # total transactions it occured in
-    totalTransactions = models.IntegerField(blank=True, null=True, default=0)
+    totalTransactions = models.BigIntegerField(blank=True, null=True, default=0)
 
     # Total Volume of transactions
-    totalVolumeTransactions = models.IntegerField(blank=True, null=True, default=0)
+    totalVolumeTransactions = models.BigIntegerField(blank=True, null=True, default=0)
 
     # Trade Type Ratio
-    purchases = models.IntegerField(blank=True, null=True, default=0)
-    sales = models.IntegerField(blank=True, null=True, default=0)
+    purchases = models.BigIntegerField(blank=True, null=True, default=0)
+    sales = models.BigIntegerField(blank=True, null=True, default=0)
 
     
     def __str__(self):
@@ -232,18 +231,18 @@ class CongressTrade(models.Model):
         return self.name.fullName
     
 
-    class Meta:
-        unique_together = ('disclosureDate', 'transactionDate', 'owner', 'ticker', 'assetDescription', 'assetType', 'transactionType', 'amount', 'comment', 'name', 'pdf', 'ptrLink')
-        ordering = ["-transactionDate"]
+    # class Meta:
+    #     unique_together = ('disclosureDate', 'transactionDate', 'owner', 'ticker', 'assetDescription', 'assetType', 'transactionType', 'amount', 'comment', 'name', 'pdf', 'ptrLink')
+    #     ordering = ["-transactionDate"]
 
 
 # Summary of all transactions 
 class SummaryStat(models.Model):
-    total = models.IntegerField(default=0)
-    purchases = models.IntegerField(default=0)
-    sales = models.IntegerField(default=0)
-    totalVolume = models.IntegerField(default=0)
-    timeframe = models.IntegerField(unique=True)
+    total = models.BigIntegerField(default=0)
+    purchases = models.BigIntegerField(default=0)
+    sales = models.BigIntegerField(default=0)
+    totalVolume = models.BigIntegerField(default=0)
+    timeframe = models.BigIntegerField(unique=True)
     
     def __str__(self):
         return str(self.total)

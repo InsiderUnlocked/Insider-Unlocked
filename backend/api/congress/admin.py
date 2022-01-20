@@ -21,11 +21,15 @@ class CongressPersonAdmin(admin.ModelAdmin):
 # Customize Congress Trade Admin
 class CongressTradeAdmin(admin.ModelAdmin):
     # Fields that will appear in the admin table view
-    list_display =  ('disclosureDate', 'transactionDate', 'owner', 'ticker', 'assetDescription', 'assetDetails', 'assetType', 'transactionType', 'amount', 'comment', 'name', 'pdf', 'ptrLink')
+    list_display =  ('disclosureDate', 'name_fullName', 'transactionDate', 'owner', 'ticker', 'assetDescription', 'assetDetails', 'assetType', 'transactionType', 'amount', 'comment', 'name', 'pdf', 'ptrLink')
     # Column sorting for the dates
     list_filter = ('transactionDate',)
     # Field that we are searching for
-    search_fields = ['ticker']
+    search_fields = ['name__fullName']
+
+    def name_fullName(self, obj):
+        return obj.name.fullName
+
 
 # Customize Congress Trade Admin
 class SummaryStatAdmin(admin.ModelAdmin):

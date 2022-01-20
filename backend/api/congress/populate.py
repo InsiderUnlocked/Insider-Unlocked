@@ -5,6 +5,7 @@
 # Import Libraries
 from .models import CongressPerson, Ticker, CongressTrade
 from .scripts.ticker import getTickerData
+from .scripts.senators import main as getSenatorData
 from django.db.models import Q
 import json
 import time
@@ -13,89 +14,78 @@ import datetime
 # Get or Create Ticker Object
 def getTicker(stockTicker):
     try:
+        # If the ticker is equal to "--", then return None as it means the asset type is not a stock 
         if stockTicker == "--":
             return None
 
+        # Check to see if the stock ticker is already in the database, if not, create it
         tickerObj, created = Ticker.objects.get_or_create(ticker=stockTicker)
 
+        # If the stock ticker has just beed created
         if created == True:
+            # Get more data about the stock ticker
             sector, industry, company, marketcap = getTickerData(stockTicker)
             
+            # Assign the stock ticker information to the newly created ticker object 
             tickerObj.sector = sector
             tickerObj.industry = industry
             tickerObj.company = company
             tickerObj.marketcap = marketcap
+            
+            # Save the changes to the database
             tickerObj.save()
         
         return tickerObj
     except Exception as e:
         print(e)
         print("ERROR: " + str(stockTicker))
+        exit()
+
 
 # Get or Create Congress Person Object
 def getCongressPerson(name):
-    edge_cases = {
-        "Pat Roberts": "Patrick Roberts",
-    }
-
     # find congress person object in database table CongressPerson
     # "Collins, Susan M. (Senator)" --> "Susan M. Collins"
     name = name.replace(" (Senator)", "")
 
     # add everything before the comma to everything after the comma
     name =  name.split(',')[-1] + " " + name.split(',')[0]
+
     # remove trailing whitespace
     name = name.strip()
 
+    # get the first and last name by 
     firstName = name.split()[0]
     lastName = name.split()[-1]
 
-    if name in edge_cases:
-        name = edge_cases[name]
+    # Django Search-Bar-Like Functionality to match a name to a congress person object from the database
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
+    congressPerson = CongressPerson.objects.filter(
+        Q(fullName__icontains=name) | 
+        Q(firstName__icontains=name) | 
+        Q(lastName__icontains=name) |
 
-    try:
-        congressPerson = CongressPerson.objects.filter(fullName__icontains=name)[0]
-        if "Former" not in name:
-            return congressPerson
-            print(name)   
-            print(congressPerson)   
-            exit() 
-    except Exception as e:
-        print(name)
-        exit()
-    
-    # check to see if name already exists in database
-    # congressPerson = CongressPerson.objects.filter(Q(fullName=name) | Q(firstName=firstName) | Q(lastName=lastName))
+        Q(fullName__icontains=firstName) | 
+        Q(firstName__icontains=firstName) | 
+        Q(lastName__icontains=firstName) |
 
-    if len(congressPerson) == 0:
+        Q(fullName__icontains=lastName) | 
+        Q(firstName__icontains=lastName) | 
+        Q(lastName__icontains=lastName)
+    ).first()
+
+
+    # DEBUG CHECK - REMOVE IN PRODUCTION
+    if congressPerson is None:
         if "Former" not in name:
-            print(name)   
-            print(congressPerson)   
+            print("Error with: " + name)     
             exit() 
     else:
-        return congressPerson[0]
-
-def updateCongressPersonCount():
-    count = CongressPerson.objects.all().count()
-    print(count)
-    i = 1
-    for congressPerson in CongressPerson.objects.all():
-        congressPerson.totalTransactions = CongressTrade.objects.filter(name=congressPerson).count()
-        congressPerson.save()
-
-        print("Done: ", str(i))
-        i += 1
-
-def updateStats():
-    pass
+        return congressPerson
 
 def updateDB(data):
-    objs = []
-    i = 0
+
     for row in data:
-        if i == 7000:
-            break
-        i += 1
         # Get all values in a variable
         name = row['Name']
 
@@ -114,12 +104,13 @@ def updateDB(data):
 
         # check if assetName contains a list
         if type(assetDescription) == list:
-
             # Check for Rates/Matures, and Options details
-            if "Rates/Matures" in assetDescription[1] or "put" in assetDescription[1] or "call" in assetDescription[1]:
-                assetDetails = assetDescription[1]
+            if "Rates/Matures" in assetDescription[1][0].lower() or "put" in assetDescription[1][0].lower() or "call" in assetDescription[1][0].lower():
+                assetDetails = assetDescription[1][0]
+            
             else:
                 assetDetails = None
+            
             assetDescription = assetDescription[0]
 
         # Create Ticker if theres a ticker
@@ -127,38 +118,36 @@ def updateDB(data):
         congressPerson = getCongressPerson(name)
 
         # Create Congress Trade Object and add it to objs
-        objs.append(CongressTrade(
-            name=congressPerson,
-            ticker=ticker, 
-            transactionDate=transactionDate, 
-            disclosureDate=notificationDate, 
-            transactionType=transactionType, 
-            amount=amount, 
-            owner=owner, 
-            assetDescription=assetDescription, 
-            assetDetails=assetDetails,
-            assetType=assetType, 
-            comment=comment, 
-            pdf=False, 
-            ptrLink=source
-        ))
+        try:
+            CongressTrade.objects.get_or_create(
+                name=congressPerson,
+                ticker=ticker, 
+                transactionDate=transactionDate, 
+                disclosureDate=notificationDate, 
+                transactionType=transactionType, 
+                amount=amount, 
+                owner=owner, 
+                assetDescription=assetDescription, 
+                assetDetails=assetDetails,
+                assetType=assetType, 
+                comment=comment, 
+                pdf=False, 
+                ptrLink=source
+            )
+        except Exception as e:
+            print(e)
+            print("ERROR: " + str(name))
+            continue
 
-    # bult create array objs 
-    print(objs)
-    CongressTrade.objects.bulk_create(objs, ignore_conflicts=True)
-
-    updateCongressPersonCount()
-    updateStats()
+        # print("Done one")
 
 def historical():
     # Load historical data  
-    data = json.load(open("./congress/transactions.json"))
-    
+    data = json.load(open("./congress/scripts/data/transactions.json"))
     updateDB(data)
-
 
 def current():
     # use senators script to get current data  
-    data = ''
+    data = getSenatorData("12/24/2021")
 
     updateDB(data)

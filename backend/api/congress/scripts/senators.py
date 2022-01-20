@@ -1,7 +1,7 @@
 # Purpose: This file will scrape data from the Senate website and return the data asJSON 
 
 # Import Libraries
-from cleanText import cleanText
+from .cleanText import cleanText
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
@@ -206,7 +206,7 @@ def parseHTML(csrfToken, link, name, notificationDate):
         raise e
 
 
-def main():
+def main(startDate):
     # Get validated CSRF token
     CSRF = bypassTOS()
     
@@ -214,7 +214,7 @@ def main():
     start = 0
     # Report Type 11 means the "periodic transactions" filter
     reportType = 11
-    startDate = "01/01/2012"
+    # startDate = "01/01/2012"
     lastName = ''
 
     # Get Reports
@@ -228,11 +228,10 @@ def main():
     dfJson = df.to_json(orient='records')
     parsedJson = json.loads(dfJson)
 
-    outfile = open('transactions.json', 'a', encoding='utf-8')
-    outfile.write(json.dumps(parsedJson, ensure_ascii=False, indent=4))
-    # outfile.write(",\n")
-    outfile.close()
+    # outfile = open('transactions.json', 'a', encoding='utf-8')
+    # outfile.write(json.dumps(parsedJson, ensure_ascii=False, indent=4))
+    # # outfile.write(",\n")
+    # outfile.close()
     
-    return df
+    return parsedJson
 
-main()

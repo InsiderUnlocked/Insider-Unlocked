@@ -1,7 +1,7 @@
 # Purpose: This script is used to download the current and historical members of the US Congress
 
 # Import Libraries
-# from ..models import CongressPerson
+from ..models import CongressPerson
 import requests
 import json
 
@@ -15,15 +15,79 @@ historicalMembersURL = "https://theunitedstates.io/congress-legislators/legislat
 # turn response into json
 def getDetails(response):    
     objs = json.loads(response.text)
+    # hashmap of states names
+    states = {
+        'AL': 'Alabama',
+        'AK': 'Alaska',
+        'AS': 'American Samoa',
+        'AZ': 'Arizona',
+        'AR': 'Arkansas',
+        'CA': 'California',
+        'CO': 'Colorado',
+        'CT': 'Connecticut',
+        'DC': 'District of Columbia',
+        'DE': 'Delaware',
+        'FL': 'Florida',
+        'GA': 'Georgia',
+        'GU': 'Guam',
+        'HI': 'Hawaii',
+        'ID': 'Idaho',
+        'IL': 'Illinois',
+        'IN': 'Indiana',
+        'IA': 'Iowa',
+        'KS': 'Kansas',
+        'KY': 'Kentucky',
+        'LA': 'Louisiana',
+        'ME': 'Maine',
+        'MD': 'Maryland',
+        'MA': 'Massachusetts',
+        'MI': 'Michigan',
+        'MN': 'Minnesota',
+        'MS': 'Mississippi',
+        'MO': 'Missouri',
+        'MT': 'Montana',
+        'MP': 'Northern Mariana Islands',
+        'NE': 'Nebraska',
+        'NV': 'Nevada',
+        'NH': 'New Hampshire',
+        'NJ': 'New Jersey',
+        'NM': 'New Mexico',
+        'NY': 'New York',
+        'NC': 'North Carolina',
+        'ND': 'North Dakota',
+        'OH': 'Ohio',
+        'OK': 'Oklahoma',
+        'OR': 'Oregon',
+        'PA': 'Pennsylvania',
+        'PR': 'Puerto Rico',
+        'RI': 'Rhode Island',
+        'SC': 'South Carolina',
+        'SD': 'South Dakota',
+        'TN': 'Tennessee',
+        'TX': 'Texas',
+        'UT': 'Utah',
+        'VT': 'Vermont',
+        'VA': 'Virginia',
+        'VI': 'Virgin Islands',
+        'WA': 'Washington',
+        'WV': 'West Virginia',
+        'WI': 'Wisconsin',
+        'WY': 'Wyoming'
+    }
+
 
     # initilize data variable to hold objects for bulk crete
     data = []
 
     for i in range(len(objs)):
         # if the object is a historical member, skip it we only care about 2012 - present cause that where the financial data is
-        if int(objs[i]["terms"][0]["start"][:4]) < 2012:
-            # skip iteration
-            continue
+        
+        # Iterate through all terms and see if any terms end dates are 2008 or later
+        for j in range(len(objs[i]['terms'])):
+            # a Senators term length is 6 years. So we want to see if their end year greater than 2006, since data only started getting recorded from 2012 and onwards
+            if int(objs[i]['terms'][j]["end"][:4]) < 2000:
+                # skip iteration
+                continue
 
         try:
             # get congress person bioguide ot be able to get the image
@@ -48,7 +112,7 @@ def getDetails(response):
                 fullName = firstName + " " + lastName
             
             # get the sate
-            state = objs[i]["terms"][-1]["state"]
+            state = states[objs[i]["terms"][-1]["state"]]
 
             #check if party is in the object
             if "party" in objs[i]["terms"][-1]:
@@ -61,15 +125,14 @@ def getDetails(response):
             
             termsServed = objs[i]["terms"]
 
-
-            # data.append(CongressPerson(bioguide=bioguide, firstName=firstName, lastName=lastName, fullName=fullName, currentState=state, currentParty=party, currentChamber=chamber, image=imageURL, termsServed=termsServed))
-
+            data.append(CongressPerson(bioguide=bioguide, firstName=firstName, lastName=lastName, fullName=fullName, currentState=state, currentParty=party, currentChamber=chamber, image=imageURL, termsServed=termsServed))
+            print("done")
         except Exception as e:
             print(e)
             continue
     
     # bulk add data
-    # CongressPerson.objects.bulk_create(data, ignore_conflicts=True)
+    CongressPerson.objects.bulk_create(data, ignore_conflicts=True)
 
 def getCurrentMembers():
     # download file as current-members.json
@@ -89,4 +152,3 @@ def main():
     getCurrentMembers()
     getHistoricalMembers()
 
-main()

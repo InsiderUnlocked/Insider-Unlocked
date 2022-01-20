@@ -13,48 +13,22 @@ from django.db.models import Q
 import datetime
 
 # TODO: Remove this in production
-# from .scripts.names import currentMembers, prevMembers
-# from .scripts.congressPeople import main as updateCongressPersonMain
-# from .scripts.house import main as houseMain
-# from .scripts.senators import main as senatorsMain
+from .scripts.congressPeople import main as updateCongressPersonMain
 from .populate import historical as populate
+from .populate import current as currentPopulate
+
 class TempDBUpdatesViewSet(viewsets.ModelViewSet):
-    # # Test gov contracts
+    # Add/Update CongressPerson Table (Get all members)
     # try:
-    # govContractsMain()
-    # except:
-    #     pass
+    # updateCongressPersonMain()
+    # # except:
+    # #     pass
 
-    # # Add/Update CongressPerson Table (Get all members)
-    # try:
-    #     currentMembers()
-    # except:
-    #     pass
-
-    # try:
-    #     prevMembers()
-    # except:
-    #     pass
-
-    # try:
-    #     houseMain()
-    # except:
-    #     pass
-
-    # try:
-    #     senatorsMain()
-    # except:
-    #     pass
-
-    # try:
-        # updateCongressPersonMain()
-    # except:
-        # pass
-
-    # print("DONE!")
     # populate()
-    # SummaryStat.objects.create(totalTransactions=14, purchases=5, sales=4, totalVolume=123, timeframe=120)
+    # currentPopulate()
+
     pass
+
 # TODO: Remove ecerything above this comment in production
 
 
@@ -142,13 +116,16 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
     # Initiliazing our seializer class
     serializer_class = CongressTradeSerializer
 
+    # Adding Logic to filter the data
+    # filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    # filterset_fields = ['ticker']
+    # search_fields = ['ticker']
         
     # filter by slug in url in django rest framework modelviewset
     def get_queryset(self):
         # Get the name that was passed in the URL
         congressPerson = self.kwargs['name']
         ticker = self.request.query_params.get('ticker')
-        transactionType = self.request.query_params.get('transactionType')
 
         # Parse slug into first and last name
         firstName = congressPerson.split()[0]
@@ -162,10 +139,7 @@ class CongressPersonViewSet(viewsets.ModelViewSet):
     
         if ticker is not None:
             queryset = queryset.filter(ticker__ticker__icontains=ticker)
-         
-        if transactionType is not None:
-            queryset = queryset.filter(transactionType__icontains=transactionType)
-
+            print(queryset)
 
         return queryset
 
