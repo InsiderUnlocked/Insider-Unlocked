@@ -9,7 +9,7 @@ Insider Unlocked is an ongoing web application we have been co-developing for th
       Website
     </a>
     <span> | </span>
-        <a href="https://github.com/InsiderUnlocked/Frontend>
+        <a href="https://github.com/InsiderUnlocked/Frontend">
       Frontend Repo
     </a>
     <span> | </span>
