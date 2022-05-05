@@ -9,12 +9,12 @@ Insider Unlocked is an ongoing web application we have been co-developing for th
       Website
     </a>
     <span> | </span>
-        <a href="https://insiderunlocked.web.app/">
-      Frontend
+        <a href="https://github.com/InsiderUnlocked/Frontend>
+      Frontend Repo
     </a>
     <span> | </span>
-        <a href="https://insiderunlocked.web.app/">
-      Backend
+        <a href="https://github.com/InsiderUnlocked/Backend">
+      Backend Repo
     </a>
     <span> | </span>
     <a href="https://github.com/InsiderUnlocked/Insider-Unlocked/blob/main/Data%20Science/notebook.ipynb">
