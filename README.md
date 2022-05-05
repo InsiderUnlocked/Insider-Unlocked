@@ -21,7 +21,7 @@ Insider Unlocked is an ongoing web application we have been co-developing for th
       Data Analysis
     </a>
     <span> | </span>
-    <a href="https://github.com/InsiderUnlocked/Insider-Unlocked/tree/main/Product%20Managmento">
+    <a href="https://github.com/InsiderUnlocked/Insider-Unlocked/tree/main/Product%20Managment">
       Product Management
     </a>
     <span> | </span>
